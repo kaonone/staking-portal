@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./@types"],
+    "traceResolution": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "module": "esnext",
+    "target": "es5",
+    "importHelpers": true,
+    "lib": [
+      "es2020",
+      "dom",
+      "scripthost"
+    ],
+    "jsx": "react",
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": true,
+    "sourceMap": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/**/*",
+    "webpack/**/*",
+    "@types/**/*"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": false
+  }
+}
