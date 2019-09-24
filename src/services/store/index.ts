@@ -6,7 +6,7 @@ import { AppStore } from './App';
 export class Store {
   public readonly ready = new BehaviorSubject<boolean>(false);
 
-  public readonly app = new AppStore();
+  public readonly app = new AppStore(this._api);
 
   // tslint:enable: member-ordering
   public constructor(private readonly _api: Observable<ApiRx>) {

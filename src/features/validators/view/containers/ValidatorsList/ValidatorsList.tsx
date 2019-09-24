@@ -5,6 +5,7 @@ import { useCall } from 'services/api';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 import { Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress } from 'shared/view/elements';
 import { usePagination } from 'shared/view/hooks';
+import BalanceValue from 'components/BalanceValue';
 
 import { useStyles } from './ValidatorsList.style';
 
@@ -112,14 +113,13 @@ function ValidatorRow({ controllerAddress, index, cellsAlign }: IValidatorRowPro
         <Typography variant="body2">
           {ledgerError ? 'Error' : stashAddress}
         </Typography>
-
       )}
     </>
   ),
-  renderInfoCell(info && '10 AKRO'),
-  renderInfoCell(info && '10 AKRO'),
-  renderInfoCell(info && '10 AKRO'),
-  renderInfoCell(info && '10 AKRO'),
+  renderInfoCell(info && <BalanceValue input="10000000000000" />),
+  renderInfoCell(info && <BalanceValue input="10000000000000000" />),
+  renderInfoCell(info && <BalanceValue input="10000000000000000000" />),
+  renderInfoCell(info && <BalanceValue input="10000000000000000" />),
   ];
 
   return (

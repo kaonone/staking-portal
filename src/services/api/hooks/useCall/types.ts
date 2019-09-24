@@ -25,7 +25,7 @@ export type ConvertedResponse<E extends Endpoint> = ISignatures[E][3];
 export interface IOption<E extends Endpoint> {
   defaultValue?: ConvertedResponse<E>;
   isSuspendedCall?: boolean;
-  getCacheKey?(endpoint: E, args: Request<E> | readonly []): string;
+  getCacheKey?(endpoint: E, args?: Request<E>): string;
 }
 
 export interface IOptionWithRequest<E extends Endpoint> extends IOption<E> {
