@@ -32,3 +32,4 @@ export { default as DialogContent } from '@material-ui/core/DialogContent';
 export { default as DialogContentText } from '@material-ui/core/DialogContentText';
 export { default as DialogTitle } from '@material-ui/core/DialogTitle';
 export { default as Button } from '@material-ui/core/Button';
+export { default as LinearProgress } from '@material-ui/core/LinearProgress';

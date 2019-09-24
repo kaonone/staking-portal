@@ -24,17 +24,13 @@ const styles = (theme: Theme) => ({
 
   disabled: {},
 
-  text: {
-    color: colors.topaz,
-  },
-
   itemsPerPage: {
-    composes: '$text',
+    color: colors.topaz,
     marginRight: theme.spacing(),
   },
 
   currentItems: {
-    composes: '$text',
+    color: colors.topaz,
   },
 
   select: {

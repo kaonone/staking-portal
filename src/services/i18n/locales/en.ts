@@ -36,6 +36,20 @@ export default {
     waiting: 'Waiting',
     daysAmount: '%{smart_count} day |||| %{smart_count} days',
   },
+  features: {
+    validators: {
+      list: {
+        colums: {
+          bonded: 'Bonded',
+          address: 'Address',
+          total: 'Total',
+          reward: 'Reward',
+          myStake: 'My stake',
+        },
+        notFound: 'Validators not found',
+      },
+    },
+  },
   modules: {},
   services: {},
 };

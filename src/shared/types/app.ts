@@ -2,6 +2,8 @@ import { ReactElement } from 'react';
 import { RouteProps } from 'react-router';
 import { Store as ReduxStore, Reducer, ActionCreator, Action } from 'redux';
 import { SagaIterator } from 'redux-saga';
+import { Observable } from 'rxjs';
+import { ApiRx } from '@polkadot/api';
 
 import * as i18nNS from 'services/i18n/namespace';
 import { LocalStorage } from 'services/storage';
@@ -19,8 +21,9 @@ export interface IAppData {
 }
 
 export interface IDependencies {
-  storage: LocalStorage;
   store: Store;
+  storage: LocalStorage;
+  polkaApi: Observable<ApiRx>;
 }
 
 export type IDictionary<T, S extends keyof any = string> = {
