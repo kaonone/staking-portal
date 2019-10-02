@@ -1,2 +1,2 @@
-export { useCall } from './hooks/useCall';
-export { callPolkaApi } from './hooks/useCall/callPolkaApi';
+export { callPolkaApi } from './callPolkaApi';
+export * from './Api';

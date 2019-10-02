@@ -40,10 +40,10 @@ export default {
     validators: {
       list: {
         colums: {
-          bonded: 'Bonded',
+          ownStake: 'Own stake',
           address: 'Address',
-          total: 'Total',
-          reward: 'Reward',
+          commission: 'Commission',
+          otherStakes: 'Other stakes',
           myStake: 'My stake',
         },
         notFound: 'Validators not found',

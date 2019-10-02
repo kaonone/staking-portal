@@ -1,18 +1,24 @@
-import * as React from 'react';
+import React, { useMemo } from 'react';
 import cn from 'classnames';
+import { empty } from 'rxjs';
+import { pluck } from 'ramda';
+import BN from 'bn.js';
 
-import { useCall } from 'services/api';
+import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 import { Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress } from 'shared/view/elements';
 import { usePagination } from 'shared/view/hooks';
 import BalanceValue from 'components/BalanceValue';
+import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './ValidatorsList.style';
 
 const tKeys = tKeysAll.features.validators.list;
 
 function ValidatorsList() {
-  const [validatorControllers, { loaded: validatorControllersLoaded }] = useCall('query.session.validators');
+  const { api } = useDeps();
+  const [validatorControllers, loadingMeta] = useSubscribable(() => api.getValidators$(), [], []);
+  const { loaded: validatorsLoaded, error: validatorsLoadingError } = loadingMeta;
 
   const classes = useStyles();
   const { t } = useTranslate();
@@ -20,9 +26,9 @@ function ValidatorsList() {
   const headerCells = [
     '#',
     t(tKeys.colums.address.getKey()),
-    t(tKeys.colums.bonded.getKey()),
-    t(tKeys.colums.total.getKey()),
-    t(tKeys.colums.reward.getKey()),
+    t(tKeys.colums.ownStake.getKey()),
+    t(tKeys.colums.commission.getKey()),
+    t(tKeys.colums.otherStakes.getKey()),
     t(tKeys.colums.myStake.getKey()),
   ];
 
@@ -30,10 +36,18 @@ function ValidatorsList() {
 
   const { items: paginatedValidatorControllers, paginationView } = usePagination(validatorControllers || []);
 
-  if (!validatorControllersLoaded) {
+  if (!validatorsLoaded) {
     return (
       <div className={classes.hint}>
         <CircleProgressBar />
+      </div>
+    );
+  }
+
+  if (!!validatorsLoadingError) {
+    return (
+      <div className={classes.hint}>
+        <Typography color="error">{validatorsLoadingError}</Typography>
       </div>
     );
   }
@@ -81,45 +95,65 @@ interface IValidatorRowProps {
 
 function ValidatorRow({ controllerAddress, index, cellsAlign }: IValidatorRowProps) {
   const classes = useStyles();
-  const [ledger, ledgerMeta] = useCall('query.staking.ledger', { args: controllerAddress });
+  const { api } = useDeps();
+
+  const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
+
+  const [ledger, ledgerMeta] = useSubscribable(
+    () => api.getStakingLedger$(controllerAddress),
+    [controllerAddress],
+    null,
+  );
   const stashAddress = ledger && ledger.stash;
-  const [info, infoMeta] = useCall(
-    'derive.staking.info',
-    { args: stashAddress || '', isSuspendedCall: !stashAddress },
+
+  const [info, infoMeta] = useSubscribable(
+    () => stashAddress ? api.getStakingInfo$(controllerAddress) : empty(),
+    [stashAddress],
+    null,
   );
 
-  const { error: ledgerError, loaded: ledgerLoaded } = ledgerMeta;
-  const { error: infoError, loaded: infoLoaded } = infoMeta;
+  const renderInfoCell = (content: React.ReactNode, metas: Array<{ loaded: boolean; error: string | null }>) => {
+    const loaded = metas.every(value => value.loaded);
+    const error = (metas.find(value => value.error) || { error: null }).error;
 
-  const renderInfoCell = (content: React.ReactNode) => (
-    <>
-      {!infoLoaded && <LinearProgress />}
-      {infoLoaded && (
-        <Typography variant="body2">
-          {infoError ? 'Error' : content}
-        </Typography>
-      )}
-    </>
-  );
+    return (
+      <>
+        {!loaded && <LinearProgress />}
+        {loaded && (
+          <Typography variant="body2">
+            {error ? error : content}
+          </Typography>
+        )}
+      </>
+    );
+  };
+
+  const stakers = info && info.stakers;
+  const ownStake = stakers && stakers.own;
+  const otherStakes = stakers && stakers.total.sub(stakers.own);
+  const validatorCommission = info && info.validatorPrefs && info.validatorPrefs.validatorPayment;
+
+  const userStake = useMemo(() => {
+    if (!stakers) {
+      return new BN(0);
+    }
+    const accountAddresses = pluck('address', accounts);
+    return stakers.others
+      .filter(item => accountAddresses.includes(item.who))
+      .map(item => item.value)
+      .reduce((acc, cur) => acc.add(cur), new BN(0));
+  }, [stakers, accounts]);
 
   const cells = [(
     <Typography variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>
-  ), (
-    <>
-      {!ledgerLoaded && <LinearProgress />}
-      {ledgerLoaded && (
-        <Typography variant="body2">
-          {ledgerError ? 'Error' : stashAddress}
-        </Typography>
-      )}
-    </>
   ),
-  renderInfoCell(info && <BalanceValue input="10000000000000" />),
-  renderInfoCell(info && <BalanceValue input="10000000000000000" />),
-  renderInfoCell(info && <BalanceValue input="10000000000000000000" />),
-  renderInfoCell(info && <BalanceValue input="10000000000000000" />),
+  renderInfoCell(stashAddress, [ledgerMeta]),
+  renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
+  renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),
+  renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [ledgerMeta, infoMeta]),
+  renderInfoCell(<BalanceValue input={userStake} />, [ledgerMeta, infoMeta, accountsMeta]),
   ];
 
   return (

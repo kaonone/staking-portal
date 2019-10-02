@@ -4,38 +4,37 @@ import { Codec } from '@polkadot/types/types';
 import { ApiRx } from '@polkadot/api';
 
 import {
-  EndpointWithoutRequest, EndpointWithRequest, Endpoint, ToRequestConverter, Request, ConvertedResponse,
+  EndpointWithoutRequest, EndpointWithRequest, Endpoint, Request, ConvertedResponse,
 } from './types';
 import { fromResponseConverters } from './fromResponse';
 import { toRequestConverters } from './toRequest';
 
 function callPolkaApi<E extends EndpointWithoutRequest>(
-  polkaApi: Observable<ApiRx>,
+  substrateApi: Observable<ApiRx>,
   endpoint: E,
 ): Observable<ConvertedResponse<E>>;
 function callPolkaApi<E extends EndpointWithRequest>(
-  polkaApi: Observable<ApiRx>,
+  substrateApi: Observable<ApiRx>,
   endpoint: E,
   args: Request<E>,
 ): Observable<ConvertedResponse<E>>;
 function callPolkaApi<E extends Endpoint>(
-  polkaApi: Observable<ApiRx>,
+  substrateApi: Observable<ApiRx>,
   endpoint: E,
   args?: Request<E>,
 ): Observable<ConvertedResponse<E>>;
 function callPolkaApi<E extends Endpoint>(
-  polkaApi: Observable<ApiRx>,
+  substrateApi: Observable<ApiRx>,
   endpoint: E,
   args?: Request<E>,
 ): Observable<ConvertedResponse<E>> {
-  return polkaApi.pipe(switchMap(api => {
+  return substrateApi.pipe(switchMap(api => {
     const [area, section, method] = endpoint.split('.');
     if (!isArea(area)) {
       throw new Error(`Unknown api.${area}, expected ${availableAreas.join(', ')}`);
     }
 
-    const toRequestConverter: ToRequestConverter<EndpointWithRequest> | null =
-      toRequestConverters[endpoint as EndpointWithRequest] || null;
+    const toRequestConverter = toRequestConverters[endpoint as EndpointWithRequest] || null;
     const convertedArgs = args && toRequestConverter ? toRequestConverter(args as Request<EndpointWithRequest>) : [];
     const argsForRequest = Array.isArray(convertedArgs) ? convertedArgs : [convertedArgs];
 
