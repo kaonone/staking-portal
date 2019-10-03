@@ -4,6 +4,7 @@ import { GetProps } from '_helpers';
 import { RowsLayout } from 'shared/view/elements';
 
 import Header from '../Header/Header';
+import PageNavigation from '../PageNavigation/PageNavigation';
 import { StylesProps, provideStyles } from './BaseLayout.style';
 
 interface IOwnProps {
@@ -11,6 +12,7 @@ interface IOwnProps {
   actions?: React.ReactNode[];
   backRoutePath?: string;
   additionalHeaderContent?: React.ReactNode;
+  hidePageNavigation?: boolean;
   children: React.ReactNode;
 }
 
@@ -18,7 +20,9 @@ type IProps = IOwnProps & StylesProps;
 
 class BaseLayout extends React.PureComponent<IProps> {
   public render() {
-    const { children, actions, backRoutePath, title, classes, additionalHeaderContent } = this.props;
+    const {
+      children, actions, backRoutePath, title, classes, additionalHeaderContent, hidePageNavigation,
+    } = this.props;
     const headerProps: GetProps<typeof Header> = {
       actions, backRoutePath, title, additionalContent: additionalHeaderContent,
     };
@@ -26,10 +30,15 @@ class BaseLayout extends React.PureComponent<IProps> {
     return (
       <RowsLayout
         spacing={4}
-        headerContent={<Header {...headerProps} />}
         classes={{ root: classes.rootRowsLayout }}
       >
-        {children}
+        <RowsLayout.ContentBlock>
+          <Header {...headerProps} />
+          {!hidePageNavigation && <PageNavigation />}
+        </RowsLayout.ContentBlock>
+        <RowsLayout.ContentBlock fillIn>
+          {children}
+        </RowsLayout.ContentBlock>
       </RowsLayout>
     );
   }

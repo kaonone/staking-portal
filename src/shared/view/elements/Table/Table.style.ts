@@ -1,10 +1,10 @@
-import { withStyles, WithStyles, Theme, colors } from 'shared/styles';
+import { Theme, colors, makeStyles } from 'shared/styles';
 
 const bottomBorder = `0px 1px 0px rgba(0, 0, 0, 0.1)`;
 
 const borderRadius = '0.25rem';
 
-const styles = (theme: Theme) => {
+export const useStyles = makeStyles((theme: Theme) => {
   const horizontalCellPadding = theme.spacing(1.5);
 
   return {
@@ -59,9 +59,10 @@ const styles = (theme: Theme) => {
 
     separated: {},
   } as const;
-};
+});
 
-// TODO ds: rewrite after transition to @material-ui/styles
-export const provideStyles = withStyles(styles);
-
-export type StylesProps = WithStyles<typeof styles>;
+export const useTableRowStyles = makeStyles({
+  clickable: {
+    cursor: 'pointer',
+  },
+});

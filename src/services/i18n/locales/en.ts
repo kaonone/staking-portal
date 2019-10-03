@@ -35,6 +35,7 @@ export default {
     done: 'Done',
     waiting: 'Waiting',
     daysAmount: '%{smart_count} day |||| %{smart_count} days',
+    mainTitle: 'Akropolis Staking Portal',
   },
   features: {
     validators: {

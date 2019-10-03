@@ -1,10 +1,14 @@
 import React from 'react';
 import BN from 'bn.js';
+import { Link } from 'react-router-dom';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
-import { Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress } from 'shared/view/elements';
+import {
+  Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress, IconButton,
+} from 'shared/view/elements';
+import { OpenInNewOutlined } from 'shared/view/elements/Icons';
 import BalanceValue from 'components/BalanceValue';
 import { usePagination } from 'shared/view/hooks';
 import { useSubscribable } from 'shared/helpers/react';
@@ -13,7 +17,11 @@ import { useStyles } from './StakesList.style';
 
 const tKeys = tKeysAll.features.stakes.list;
 
-function StakesList() {
+interface IProps {
+  makeLinkToStake(accountAddress: string): string;
+}
+
+function StakesList(props: IProps) {
   const { api } = useDeps();
   const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
   const { loaded: accountsLoaded, error: accountsLoadingError } = accountsMeta;
@@ -27,9 +35,10 @@ function StakesList() {
     t(tKeys.columns.nominators.getKey()),
     t(tKeys.columns.size.getKey()),
     t(tKeys.columns.awaitingWithdrawal.getKey()),
+    '',
   ];
 
-  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'left', 'left', 'left', 'left'];
+  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'left', 'left', 'left', 'left', 'center'];
 
   const { items: paginatedAccounts, paginationView } = usePagination(accounts || []);
 
@@ -69,6 +78,7 @@ function StakesList() {
           <TableBody>
             {paginatedAccounts.map((account, index) => (
               <StakeRow
+                {...props}
                 key={account.address}
                 index={index}
                 account={account}
@@ -84,13 +94,13 @@ function StakesList() {
     );
 }
 
-interface IValidatorRowProps {
+interface IValidatorRowProps extends IProps {
   index: number;
   account: InjectedAccountWithMeta;
   cellsAlign: Array<'left' | 'center' | 'right'>;
 }
 
-function StakeRow({ account, index, cellsAlign }: IValidatorRowProps) {
+function StakeRow({ account, index, cellsAlign, makeLinkToStake }: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
@@ -129,6 +139,11 @@ function StakeRow({ account, index, cellsAlign }: IValidatorRowProps) {
   renderInfoCell(nominatorsCount, [infoMeta]),
   renderInfoCell(<BalanceValue input={stakeSize} />, [infoMeta]),
   renderInfoCell(<BalanceValue input={awaitingWithdrawal} />, [infoMeta]),
+  renderInfoCell((
+    <IconButton component={Link} to={makeLinkToStake(account.address)} className={classes.iconButton}>
+      <OpenInNewOutlined fontSize="inherit" />
+    </IconButton>
+  ), []),
   ];
 
   return (
