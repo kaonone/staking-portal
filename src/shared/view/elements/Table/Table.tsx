@@ -4,7 +4,7 @@ import { StylesProps, provideStyles } from './Table.style';
 
 type MakeFnComponentProps<P = {}, C = any> = P & { children?: C };
 
-type ISharedProps = StylesProps & { className?: string, onClick?(): void };
+interface ISharedProps { className?: string; onClick?(): void; }
 
 interface ICellProps {
   align?: 'left' | 'center' | 'right';
@@ -15,7 +15,7 @@ interface ITableProps {
   separated?: boolean;
   onClick?(): void;
 }
-class Table extends React.Component<ISharedProps & ITableProps> {
+class Table extends React.Component<ISharedProps & ITableProps & StylesProps> {
 
   public render() {
     const { classes, children, className, separated } = this.props;
@@ -36,22 +36,21 @@ class Table extends React.Component<ISharedProps & ITableProps> {
 
 const TableComponent = provideStyles(Table);
 
-const TableHead = provideStyles((props: MakeFnComponentProps<ISharedProps>) => {
-  return <thead className={props.className}>{props.children}</thead>;
-});
+function TableHead(props: MakeFnComponentProps<ISharedProps>) {
+  return <thead {...props} />;
+}
 
-const TableBody = provideStyles((props: MakeFnComponentProps<ISharedProps>) => {
-  return <tbody className={props.className}>{props.children}</tbody>;
-});
+function TableBody(props: MakeFnComponentProps<ISharedProps>) {
+  return <tbody {...props} />;
+}
 
-const TableRow = provideStyles((props: MakeFnComponentProps<ISharedProps>) => {
-  const { classes, children, className, ...rest } = props;
-  return <tr className={cn(classes.row, className)} {...rest}>{children}</tr>;
-});
+function TableRow(props: MakeFnComponentProps<ISharedProps>) {
+  return <tr {...props} />;
+}
 
-const TableCell = React.memo(provideStyles((props: MakeFnComponentProps<ISharedProps & ICellProps>) => {
-  const { classes, children, className, ...tableRest } = props;
-  return <td className={cn(classes.cell, className)} {...tableRest}>{children}</td>;
-}));
+const TableCell = React.memo((props: MakeFnComponentProps<ISharedProps & ICellProps>) => {
+  return <td {...props} />;
+});
+TableCell.displayName = 'TableCell';
 
 export { TableComponent as Table, TableHead, TableBody, TableRow, TableCell };

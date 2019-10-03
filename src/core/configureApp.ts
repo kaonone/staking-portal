@@ -2,7 +2,7 @@ import configureDeps from './configureDeps';
 import { TYPES, container } from './configureIoc';
 import configureStore, { createReducer } from './configureStore';
 
-import { ValidatorsModule } from 'modules';
+import { ValidatorsModule, StakesModule } from 'modules';
 import { reduxEntry as i18nRE } from 'services/i18n';
 
 import { ReducersMap } from 'shared/types/redux';
@@ -12,6 +12,7 @@ function configureApp(data?: IAppData): IAppData {
   /* Prepare main app elements */
   const modules: IModule[] = [
     ValidatorsModule,
+    StakesModule,
   ];
 
   if (data) {

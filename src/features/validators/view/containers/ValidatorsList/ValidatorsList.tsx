@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import cn from 'classnames';
 import { empty } from 'rxjs';
 import { pluck } from 'ramda';
 import BN from 'bn.js';
@@ -7,8 +6,8 @@ import BN from 'bn.js';
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 import { Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress } from 'shared/view/elements';
-import { usePagination } from 'shared/view/hooks';
 import BalanceValue from 'components/BalanceValue';
+import { usePagination } from 'shared/view/hooks';
 import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './ValidatorsList.style';
@@ -25,11 +24,11 @@ function ValidatorsList() {
 
   const headerCells = [
     '#',
-    t(tKeys.colums.address.getKey()),
-    t(tKeys.colums.ownStake.getKey()),
-    t(tKeys.colums.commission.getKey()),
-    t(tKeys.colums.otherStakes.getKey()),
-    t(tKeys.colums.myStake.getKey()),
+    t(tKeys.columns.address.getKey()),
+    t(tKeys.columns.ownStake.getKey()),
+    t(tKeys.columns.commission.getKey()),
+    t(tKeys.columns.otherStakes.getKey()),
+    t(tKeys.columns.myStake.getKey()),
   ];
 
   const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'left', 'left', 'left', 'left', 'left'];
@@ -59,12 +58,12 @@ function ValidatorsList() {
       </div>
     ) : (
       <div>
-        <Table separated className={classes.table}>
+        <Table separated>
           <TableHead>
-            <TableRow className={classes.header}>
+            <TableRow>
               {headerCells.map((title, i) => (
-                <TableCell key={i} align={cellsAlign[i]} className={cn(classes.cell, classes.headerCell)}>
-                  <Typography variant="subtitle1" className={classes.headerTitle}>{title}</Typography>
+                <TableCell key={i} align={cellsAlign[i]}>
+                  {title}
                 </TableCell>
               ))}
             </TableRow>
@@ -119,11 +118,7 @@ function ValidatorRow({ controllerAddress, index, cellsAlign }: IValidatorRowPro
     return (
       <>
         {!loaded && <LinearProgress />}
-        {loaded && (
-          <Typography variant="body2">
-            {error ? error : content}
-          </Typography>
-        )}
+        {loaded && (error ? <Typography color="error">{error}</Typography> : content)}
       </>
     );
   };
@@ -157,13 +152,9 @@ function ValidatorRow({ controllerAddress, index, cellsAlign }: IValidatorRowPro
   ];
 
   return (
-    <TableRow className={classes.row}>
+    <TableRow>
       {cells.map((cell, k) => (
-        <TableCell
-          key={k}
-          className={classes.cell}
-          align={cellsAlign[k]}
-        >
+        <TableCell key={k} align={cellsAlign[k]}>
           {cell}
         </TableCell>
       ))}
