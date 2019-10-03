@@ -17,14 +17,10 @@ const styles = (theme: Theme) => ({
     background: colors.white,
   },
 
-  text: {
+  cell: {
     fontWeight: 'normal',
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.text.primary,
-  },
-
-  cell: {
-    composes: '$text',
     fontSize: '0.9375rem',
   },
 } as const);

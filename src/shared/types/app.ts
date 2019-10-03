@@ -6,6 +6,7 @@ import { SagaIterator } from 'redux-saga';
 import * as i18nNS from 'services/i18n/namespace';
 import { LocalStorage } from 'services/storage';
 import { Store } from 'services/store';
+import { Api } from 'services/api';
 
 export interface IModule {
   getRoutes?(): ReactElement<RouteProps> | Array<ReactElement<RouteProps>>;
@@ -19,8 +20,9 @@ export interface IAppData {
 }
 
 export interface IDependencies {
-  storage: LocalStorage;
   store: Store;
+  storage: LocalStorage;
+  api: Api;
 }
 
 export type IDictionary<T, S extends keyof any = string> = {

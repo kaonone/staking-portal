@@ -3,16 +3,12 @@ import { withStyles, Theme, WithStyles } from 'shared/styles';
 const styles = (_theme: Theme) => ({
   root: {},
 
-  metricTypography: {
+  metricTitle: {
     color: 'inherit',
   },
 
-  metricTitle: {
-    composes: '$metricTypography',
-  },
-
   metricValue: {
-    composes: '$metricTypography',
+    color: 'inherit',
   },
 });
 

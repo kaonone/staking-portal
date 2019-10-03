@@ -18,8 +18,8 @@ type IProps = IOwnProps & RouteComponentProps;
 
 const LoadingContainer = (props: IProps) => {
   const { store } = useDeps();
-  const ready = useSubscribable(store.ready, false);
-  const injectedWeb3Extensions = useSubscribable(store.app.injectedWeb3Extensions, []);
+  const ready = useSubscribable(() => store.ready, [], false);
+  const injectedWeb3Extensions = useSubscribable(() => store.app.injectedWeb3Extensions, [], []);
   const { t } = useTranslate();
 
   const status: Status = React.useMemo<Status>(() => {
