@@ -32,7 +32,7 @@ function StakesList(props: IProps) {
   const headerCells = [
     '#',
     t(tKeys.columns.name.getKey()),
-    t(tKeys.columns.nominators.getKey()),
+    t(tKeys.columns.nominees.getKey()),
     t(tKeys.columns.size.getKey()),
     t(tKeys.columns.awaitingWithdrawal.getKey()),
     '',

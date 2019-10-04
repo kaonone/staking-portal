@@ -54,7 +54,7 @@ export default {
       list: {
         columns: {
           name: 'Name',
-          nominators: 'Nominators',
+          nominees: 'Nominees',
           size: 'Size',
           awaitingWithdrawal: 'Awaiting withdrawal',
         },

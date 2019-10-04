@@ -62,6 +62,7 @@
     "jsx-boolean-value": false,
     "no-var-requires": false,
     "no-console": false,
+    "jsx-wrap-multiline": false,
     "jsx-no-multiline-js": false,
     "object-literal-sort-keys": false,
     "arrow-parens": false,

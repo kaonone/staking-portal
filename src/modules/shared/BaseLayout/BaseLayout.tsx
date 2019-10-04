@@ -8,7 +8,7 @@ import PageNavigation from '../PageNavigation/PageNavigation';
 import { StylesProps, provideStyles } from './BaseLayout.style';
 
 interface IOwnProps {
-  title: string;
+  title: React.ReactNode;
   actions?: React.ReactNode[];
   backRoutePath?: string;
   additionalHeaderContent?: React.ReactNode;
