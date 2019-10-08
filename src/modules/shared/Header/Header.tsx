@@ -12,7 +12,7 @@ const LinkIconButton = withComponent(Link)(IconButton);
 interface IOwnProps {
   actions?: React.ReactNode[];
   backRoutePath?: string;
-  title: string;
+  title: React.ReactNode;
   additionalContent?: React.ReactNode;
 }
 

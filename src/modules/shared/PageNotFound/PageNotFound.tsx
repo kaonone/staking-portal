@@ -9,20 +9,22 @@ import { provideStyles, StylesProps } from './PageNotFound.style';
 
 type IProps = StylesProps & InjectedAuthRouterProps;
 
-class PageNotFound extends React.PureComponent<IProps> {
-  public render() {
-    const { classes } = this.props;
-    const { t } = useTranslate();
+function PageNotFound(props: IProps) {
+  const { classes } = props;
+  const { t } = useTranslate();
 
-    return (
-      <BaseLayout title={t(tKeys.shared.pageNotFound.getKey())} backRoutePath={routes.validators.getRedirectPath()}>
-        <div className={classes.root}>
-          <div className={classes.title}>404.</div>
-          <div className={classes.description}>{t(tKeys.shared.pageNotFound.getKey())}</div>
-        </div>
-      </BaseLayout>
-    );
-  }
+  return (
+    <BaseLayout
+      hidePageNavigation
+      title={t(tKeys.shared.pageNotFound.getKey())}
+      backRoutePath={routes.stakes.getRedirectPath()}
+    >
+      <div className={classes.root}>
+        <div className={classes.title}>404.</div>
+        <div className={classes.description}>{t(tKeys.shared.pageNotFound.getKey())}</div>
+      </div>
+    </BaseLayout>
+  );
 }
 
 export { IProps };

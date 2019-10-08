@@ -35,11 +35,12 @@ export default {
     done: 'Done',
     waiting: 'Waiting',
     daysAmount: '%{smart_count} day |||| %{smart_count} days',
+    mainTitle: 'Akropolis Staking Portal',
   },
   features: {
     validators: {
       list: {
-        colums: {
+        columns: {
           ownStake: 'Own stake',
           address: 'Address',
           commission: 'Commission',
@@ -47,6 +48,17 @@ export default {
           myStake: 'My stake',
         },
         notFound: 'Validators not found',
+      },
+    },
+    stakes: {
+      list: {
+        columns: {
+          name: 'Name',
+          nominees: 'Nominees',
+          size: 'Size',
+          awaitingWithdrawal: 'Awaiting withdrawal',
+        },
+        notFound: 'Your Substrate accounts can not be found, please install Polkadot.js browser extension and create an account.',
       },
     },
   },

@@ -1,31 +1,68 @@
-import { withStyles, WithStyles, Theme, colors } from 'shared/styles';
+import { Theme, colors, makeStyles } from 'shared/styles';
 
-const styles = (theme: Theme) => ({
+const bottomBorder = `0px 1px 0px rgba(0, 0, 0, 0.1)`;
 
-  root: {
-    width: '100%',
+const borderRadius = '0.25rem';
 
-    '&$separated': {
-      borderSpacing: '0 1rem',
-      borderCollapse: 'separate',
+export const useStyles = makeStyles((theme: Theme) => {
+  const horizontalCellPadding = theme.spacing(1.5);
+
+  return {
+    root: {
+      width: '100%',
+
+      '&$separated': {
+        borderSpacing: '0 1rem',
+        borderCollapse: 'separate',
+        marginTop: '-1rem',
+      },
+
+      '& tr': {
+        borderRadius,
+        background: colors.white,
+      },
+
+      '& td, & th': {
+        padding: `${theme.spacing(1.75)}px ${horizontalCellPadding}px`,
+
+        '&:first-child': {
+          borderTopLeftRadius: borderRadius,
+          borderBottomLeftRadius: borderRadius,
+        },
+
+        '&:last-child': {
+          paddingRight: theme.spacing(2),
+          borderTopRightRadius: borderRadius,
+          borderBottomRightRadius: borderRadius,
+        },
+      },
+
+      '& thead tr': {
+        backgroundColor: '#F4F3F5',
+        borderRadius,
+      },
+
+      '& tbody tr': {
+        boxShadow: bottomBorder,
+      },
+
+      '& thead td, & thead th': {
+        ...theme.typography.subtitle1,
+        padding: `${theme.spacing(0.75)}px ${horizontalCellPadding}px`,
+        color: colors.topaz,
+      },
+
+      '& tbody td, & thead th': {
+        ...theme.typography.body1,
+      },
     },
+
+    separated: {},
+  } as const;
+});
+
+export const useTableRowStyles = makeStyles({
+  clickable: {
+    cursor: 'pointer',
   },
-
-  separated: {},
-
-  row: {
-    background: colors.white,
-  },
-
-  cell: {
-    fontWeight: 'normal',
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.text.primary,
-    fontSize: '0.9375rem',
-  },
-} as const);
-
-// TODO ds: rewrite after transition to @material-ui/styles
-export const provideStyles = withStyles(styles);
-
-export type StylesProps = WithStyles<typeof styles>;
+});

@@ -1,11 +1,11 @@
-import { Observable, from, fromEventPattern } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Observable, from, fromEventPattern, defer, ReplaySubject } from 'rxjs';
+import { switchMap, retry } from 'rxjs/operators';
 import { identity } from 'ramda';
 import { ApiRx } from '@polkadot/api';
 import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
-import { memoize } from 'shared/helpers';
+import { memoize, delay } from 'shared/helpers';
 import { callPolkaApi } from './callPolkaApi';
 import { IStakingLedger, IDerivedStaking } from './callPolkaApi/types';
 
@@ -29,14 +29,34 @@ export class Api {
 
   @memoize()
   public getSubstrateAccounts$(): Observable<InjectedAccountWithMeta[]> {
-    return from(web3Enable('Akropolis Staking Portal')).pipe(
-      switchMap((injectedExtensions) => injectedExtensions.length
-        ? fromEventPattern<InjectedAccountWithMeta[]>(
-          emitter => web3AccountsSubscribe(emitter),
-          (_, signal: ReturnType<typeof web3AccountsSubscribe>) => signal.then(unsubscribe => unsubscribe()),
-        )
-        : new Observable<InjectedAccountWithMeta[]>(subscriber => subscriber.error(new Error('Injected extensions not found'))),
+    const accounts$ = new ReplaySubject<InjectedAccountWithMeta[]>();
+
+    defer(() =>
+      from(
+        (async () => {
+          const injected = await web3Enable('Akropolis Staking Portal');
+          if (!injected.length) {
+            await delay(1000);
+          }
+          return injected;
+        })(),
       ),
-    );
+    )
+      .pipe(
+        switchMap(injectedExtensions =>
+          injectedExtensions.length
+            ? fromEventPattern<InjectedAccountWithMeta[]>(
+                emitter => web3AccountsSubscribe(emitter),
+                (_, signal: ReturnType<typeof web3AccountsSubscribe>) => signal.then(unsubscribe => unsubscribe()),
+              )
+            : new Observable<InjectedAccountWithMeta[]>(subscriber =>
+                subscriber.error(new Error('Injected extensions not found')),
+              ),
+        ),
+        retry(3),
+      )
+      .subscribe(accounts$);
+
+    return accounts$;
   }
 }
