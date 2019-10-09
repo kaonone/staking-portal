@@ -61,6 +61,26 @@ export default {
         notFound: 'Your Substrate accounts can not be found, please install Polkadot.js browser extension and create an account.',
       },
     },
+    manageStake: {
+      balanceReplenishmentForm: {
+        title: 'Stake balance refill form',
+        field: {
+          placeholder: 'Enter sum',
+          name: 'sum',
+        },
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Replenish balance',
+      },
+      cashWithdrawalForm: {
+        title: 'Cash Withdrawal Form',
+        field: {
+          placeholder: 'Enter sum',
+          name: 'sum',
+        },
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Withdraw money',
+      },
+    },
   },
   modules: {},
   services: {},
