@@ -8,19 +8,18 @@ import { getFieldWithComponent } from 'shared/helpers/react';
 
 type IProps = Omit<GetProps<typeof NumberInput>, 'ref'> & FieldRenderProps;
 
-class NumberInputField extends React.Component<IProps> {
-  public render() {
-    const { input, meta, ...rest } = this.props;
-    const { t } = useTranslate();
-    const error = typeof rest.error === 'boolean'
-      ? rest.error && meta.error && t(meta.error)
-      : meta.touched && meta.error && t(meta.error);
-    return (
-      <NumberInput {...rest} helperText={error} error={Boolean(error)} {...input} onChange={this.onChange} />
-    );
-  }
+function NumberInputField(props: IProps) {
+  const { input, meta, ...rest } = props;
+  const { t } = useTranslate();
+  const error = typeof rest.error === 'boolean'
+    ? rest.error && meta.error && t(meta.error)
+    : meta.touched && meta.error && t(meta.error);
 
-  private onChange: GetProps<typeof NumberInput>['onChange'] = value => this.props.input.onChange(value.floatValue);
+  const onChange: GetProps<typeof NumberInput>['onChange'] = value => props.input.onChange(value.floatValue);
+
+  return (
+    <NumberInput {...rest} helperText={error} error={Boolean(error)} {...input} onChange={onChange}/>
+  );
 }
 
 export default getFieldWithComponent(NumberInputField);
