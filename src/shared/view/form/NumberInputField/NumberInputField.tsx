@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { FieldRenderProps } from 'react-final-form';
 import { GetProps } from '_helpers';
 
@@ -15,7 +15,10 @@ function NumberInputField(props: IProps) {
     ? rest.error && meta.error && t(meta.error)
     : meta.touched && meta.error && t(meta.error);
 
-  const onChange: GetProps<typeof NumberInput>['onChange'] = value => props.input.onChange(value.floatValue);
+  const onChange: GetProps<typeof NumberInput>['onChange'] = useCallback(
+    value => props.input.onChange(value.floatValue),
+    [props],
+  );
 
   return (
     <NumberInput {...rest} helperText={error} error={Boolean(error)} {...input} onChange={onChange}/>
