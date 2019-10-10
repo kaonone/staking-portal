@@ -9,19 +9,14 @@ import {
 import { fromResponseConverters } from './fromResponse';
 import { toRequestConverters } from './toRequest';
 
-function callPolkaApi<E extends EndpointWithoutRequest>(
-  substrateApi: Observable<ApiRx>,
-  endpoint: E,
-): Observable<ConvertedResponse<E>>;
 function callPolkaApi<E extends EndpointWithRequest>(
   substrateApi: Observable<ApiRx>,
   endpoint: E,
   args: Request<E>,
 ): Observable<ConvertedResponse<E>>;
-function callPolkaApi<E extends Endpoint>(
+function callPolkaApi<E extends EndpointWithoutRequest>(
   substrateApi: Observable<ApiRx>,
   endpoint: E,
-  args?: Request<E>,
 ): Observable<ConvertedResponse<E>>;
 function callPolkaApi<E extends Endpoint>(
   substrateApi: Observable<ApiRx>,
