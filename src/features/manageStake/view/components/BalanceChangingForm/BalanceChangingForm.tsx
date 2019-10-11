@@ -60,9 +60,9 @@ function BalanceChangingForm(props: IProps) {
   }
 
   return (
-    <Form onSubmit={onSubmit} initialValues={initialValues}>
-      {formProps => (
-        <form onSubmit={formProps.handleSubmit} className={classes.root}>
+    <Form onSubmit={onSubmit} initialValues={initialValues} subscription={{ submitError: true, submitting: true }}>
+      {({ handleSubmit, submitError, submitting }) => (
+        <form onSubmit={handleSubmit} className={classes.root}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h5" weight="bold" noWrap gutterBottom>
@@ -82,10 +82,16 @@ function BalanceChangingForm(props: IProps) {
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button variant="contained" color="primary" type="submit" fullWidth>
-                {submitButtonText}
+              <Button variant="contained" color="primary" type="submit" fullWidth disabled={submitting}>
+                {submitting ? <CircleProgressBar size={24} /> : submitButtonText}
               </Button>
             </Grid>
+            {!!submitError && (
+              <Grid item xs={12}>
+                {/* TODO: need to wrap in Hint */}
+                <Typography color="error">{submitError}</Typography>
+              </Grid>
+            )}
           </Grid>
         </form>
       )}

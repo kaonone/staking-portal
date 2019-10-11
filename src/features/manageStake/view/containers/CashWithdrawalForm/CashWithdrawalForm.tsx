@@ -4,16 +4,17 @@ import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
 
-function CashWithdrawalForm() {
+interface IProps {
+  onCancel(): void;
+}
+
+function CashWithdrawalForm(props: IProps) {
+  const { onCancel } = props;
   const { t } = useTranslate();
   const tKeys = tKeysAll.features.manageStake.cashWithdrawalForm;
 
   const onSubmit = (values: IFormData) => {
     console.log('Submit form', values);
-  };
-
-  const onCancel = () => {
-    console.log('Cancel form');
   };
 
   return (
