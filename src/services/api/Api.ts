@@ -33,6 +33,12 @@ export class Api {
     });
   }
 
+  public async withdrawFromStake(fromAddress: string, amount: BN): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.unbond', {
+      value: amount,
+    });
+  }
+
   @memoize()
   public getValidators$(): Observable<string[]> {
     return callPolkaApi(this._substrateApi, 'query.session.validators');

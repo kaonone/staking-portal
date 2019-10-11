@@ -21,10 +21,15 @@ interface IBondExtraRequest {
   maxAdditionalValue: BN;
 }
 
+interface IUnbondRequest {
+  value: BN;
+}
+
 /**** Converted Request Types ****/
 
 type ConvertedBondRequest = [string, BN, Payee];
 type ConvertedBondExtraRequest = [BN];
+type ConvertedUnbondRequest = [BN];
 
 /********/
 
@@ -32,6 +37,7 @@ type ConvertedBondExtraRequest = [BN];
 interface ISignatures {
   'staking.bond': [IBondRequest, ConvertedBondRequest];
   'staking.bondExtra': [IBondExtraRequest, ConvertedBondExtraRequest];
+  'staking.unbond': [IUnbondRequest, ConvertedUnbondRequest];
   'mock.without.request': [null, null];
 }
 
