@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { provideStyles, StylesProps } from './DrawerModal.style';
 import { useTranslate, tKeys } from 'services/i18n';
-import { Button, Drawer } from 'shared/view/elements';
+import { Button, Drawer, Hint } from 'shared/view/elements';
 import { Alert } from 'shared/view/elements/Icons';
 
 interface IOwnProps {
@@ -31,10 +31,10 @@ class DrawerModal extends React.Component<IProps> {
           <div className={classes.title}>{title}</div>
           <div className={classes.content}>{children}</div>
           {hint && (
-            <div className={classes.hint}>
+            <Hint>
               <Alert className={classes.hintIcon} />
               {hint}
-            </div>
+            </Hint>
           )}
           <div className={classes.actions}>
             {actions.map((action, i) => <div className={classes.action} key={i}>{action}</div>)}

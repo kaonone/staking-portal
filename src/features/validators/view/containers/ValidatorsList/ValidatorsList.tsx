@@ -14,6 +14,8 @@ import {
   TableBody,
   CircleProgressBar,
   LinearProgress,
+  Checkbox,
+  Hint,
 } from 'shared/view/elements';
 import BalanceValue from 'components/BalanceValue';
 import { usePagination } from 'shared/view/hooks';
@@ -57,24 +59,24 @@ function ValidatorsList(props: IProps) {
 
   if (!validatorsLoaded) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <CircleProgressBar />
-      </div>
+      </Hint>
     );
   }
 
   if (!!validatorsLoadingError) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <Typography color="error">{validatorsLoadingError}</Typography>
-      </div>
+      </Hint>
     );
   }
 
   return !paginatedValidators.length ? (
-    <div className={classes.hint}>
+    <Hint>
       <Typography>{t(tKeys.notFound.getKey())}</Typography>
-    </div>
+    </Hint>
   ) : (
     <div>
       <Table separated>
