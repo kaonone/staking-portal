@@ -1,9 +1,7 @@
 import { makeStyles, colors } from 'shared/styles';
 
-const styles = () => ({
+export const useStyles = makeStyles({
   root: {
-    color: colors.silver,
+    color: colors.topaz,
   },
-} as const);
-
-export const useStyles = makeStyles(styles);
+});

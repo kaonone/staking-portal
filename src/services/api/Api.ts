@@ -7,7 +7,7 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
 import { memoize, delay } from 'shared/helpers';
 import { callPolkaApi } from './callPolkaApi';
-import { IStakingLedger, IDerivedStaking } from './callPolkaApi/types';
+import { IStakingLedger, IDerivedStaking, IChainProperties } from './callPolkaApi/types';
 
 export class Api {
   constructor(private _substrateApi: Observable<ApiRx>) {}
@@ -25,6 +25,11 @@ export class Api {
   @memoize(identity)
   public getStakingInfo$(stashAddress: string): Observable<IDerivedStaking> {
     return callPolkaApi(this._substrateApi, 'derive.staking.info', stashAddress);
+  }
+
+  @memoize(identity)
+  public getChainProps$(): Observable<IChainProperties> {
+    return callPolkaApi(this._substrateApi, 'rpc.system.properties');
   }
 
   @memoize()

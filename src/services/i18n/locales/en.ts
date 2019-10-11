@@ -66,19 +66,17 @@ export default {
     },
     manageStake: {
       balanceReplenishmentForm: {
-        title: 'Stake balance refill form',
+        title: 'Stake Balance Replenishment',
         field: {
           placeholder: 'Enter sum',
-          name: 'sum',
         },
         cancelButtonText: 'Cancel',
         submitButtonText: 'Replenish balance',
       },
       cashWithdrawalForm: {
-        title: 'Cash Withdrawal Form',
+        title: 'Cash Withdrawal',
         field: {
           placeholder: 'Enter sum',
-          name: 'sum',
         },
         cancelButtonText: 'Cancel',
         submitButtonText: 'Withdraw money',

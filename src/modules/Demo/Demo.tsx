@@ -4,12 +4,12 @@ import { Route } from 'react-router-dom';
 import routes from 'modules/routes';
 import { IModule } from 'shared/types/app';
 
-import FormsDemo from './view/FormsDemo/FormsDemo';
+import Demo from './view/Demo/Demo';
 
-export const FormsDemoModule: IModule = {
+export const DemoModule: IModule = {
   getRoutes() {
     return [
-      <Route exact key="FormsDemo" path={routes['forms-demo'].getRoutePath()} component={FormsDemo} />,
+      <Route exact key="Demo" path={routes.demo.getRoutePath()} component={Demo} />,
     ];
   },
 };

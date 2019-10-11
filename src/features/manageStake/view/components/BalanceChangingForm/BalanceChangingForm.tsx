@@ -1,41 +1,63 @@
 import React from 'react';
 import { Form } from 'react-final-form';
-import Grid from '@material-ui/core/Grid';
 
-import { Button, Typography } from 'shared/view/elements';
+import { useDeps } from 'core';
 import { TextInputField } from 'shared/view/form';
+import { Button, Typography, Grid, CircleProgressBar } from 'shared/view/elements';
+import { composeValidators, validateFloat, validatePositiveNumber } from 'shared/validators';
+import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './BalanceChangingForm.style';
-import { FieldState } from 'final-form';
 
-interface IProps<N extends string> {
+interface IFormData {
+  amount: string;
+}
+
+const fieldNames: { [K in keyof IFormData]: K } = {
+  amount: 'amount',
+};
+
+interface IProps {
   title: string;
   placeholder: string;
-  fieldName: N;
   cancelButtonText: string;
   submitButtonText: string;
-  validate: (value?: any, allValues?: {}, meta?: FieldState) => any;
-  onSubmit: (values: { [key in N]: string }) => void;
+  onSubmit: (values: IFormData) => void;
   onCancel: () => void;
 }
 
-function BalanceChangingForm<N extends string>(props: IProps<N>) {
+function BalanceChangingForm(props: IProps) {
+  const { title, placeholder, cancelButtonText, submitButtonText, onSubmit, onCancel } = props;
+
   const classes = useStyles();
+  const { api } = useDeps();
+  const [chainProps, chainPropsMeta] = useSubscribable(() => api.getChainProps$(), []);
 
-  const initialValues = React.useMemo(() => ({
-    [fieldName]: '',
-  }), []);
+  const initialValues = React.useMemo<IFormData>(
+    () => ({
+      amount: '',
+    }),
+    [],
+  );
 
-  const {
-    title,
-    placeholder,
-    fieldName,
-    cancelButtonText,
-    submitButtonText,
-    validate,
-    onSubmit,
-    onCancel,
-  } = props;
+  const amountDecimals = chainProps ? chainProps.tokenDecimals : 0;
+  const validateAmount = React.useMemo(() => {
+    return composeValidators(validateFloat(amountDecimals), validatePositiveNumber);
+  }, [amountDecimals]);
+
+  if (!chainPropsMeta.loaded) {
+    return (
+      // TODO: need to wrap in Hint
+      <CircleProgressBar />
+    );
+  }
+
+  if (!!chainPropsMeta.error) {
+    return (
+      // TODO: need to wrap in Hint
+      <Typography color="error">{chainPropsMeta.error}</Typography>
+    );
+  }
 
   return (
     <Form onSubmit={onSubmit} initialValues={initialValues}>
@@ -43,39 +65,24 @@ function BalanceChangingForm<N extends string>(props: IProps<N>) {
         <form onSubmit={formProps.handleSubmit} className={classes.root}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography
-                variant="h5"
-                weight="bold"
-                noWrap
-                gutterBottom
-              >
+              <Typography variant="h5" weight="bold" noWrap gutterBottom>
                 {title}
               </Typography>
               <TextInputField
                 variant="outlined"
-                validate={validate}
-                name={fieldName}
+                validate={validateAmount}
+                name={fieldNames.amount}
                 placeholder={placeholder}
                 fullWidth
               />
             </Grid>
             <Grid item xs={6}>
-              <Button
-                variant="outlined"
-                color="primary"
-                fullWidth
-                onClick={onCancel}
-              >
+              <Button variant="outlined" color="primary" fullWidth onClick={onCancel}>
                 {cancelButtonText}
               </Button>
             </Grid>
             <Grid item xs={6}>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                fullWidth
-              >
+              <Button variant="contained" color="primary" type="submit" fullWidth>
                 {submitButtonText}
               </Button>
             </Grid>
@@ -86,4 +93,5 @@ function BalanceChangingForm<N extends string>(props: IProps<N>) {
   );
 }
 
+export { IFormData };
 export default BalanceChangingForm;

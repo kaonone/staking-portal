@@ -8,7 +8,7 @@ import {
   CashWithdrawalForm,
 } from 'features/manageStake';
 
-function FormsDemo(_props: RouteComponentProps<any>) {
+function Demo(_props: RouteComponentProps<any>) {
   const { t, tKeys } = useTranslate();
   return (
     <BaseLayout title={t(tKeys.shared.mainTitle.getKey())}>
@@ -28,4 +28,4 @@ function FormsDemo(_props: RouteComponentProps<any>) {
   );
 }
 
-export default FormsDemo;
+export default Demo;
