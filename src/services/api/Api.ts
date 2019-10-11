@@ -1,5 +1,5 @@
 import { Observable, from, fromEventPattern, defer, ReplaySubject } from 'rxjs';
-import { switchMap, retry } from 'rxjs/operators';
+import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
 import { ApiRx } from '@polkadot/api';
@@ -19,9 +19,9 @@ export class Api {
     return this._extrinsicApi.getExtrinsicsQueue$();
   }
 
-  public async createStake(fromAddress: string, controller: string, value: BN): Promise<void> {
+  public async createStake(fromAddress: string, value: BN): Promise<void> {
     await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.bond', {
-      controller,
+      controller: fromAddress,
       payee: Payee.staked,
       value,
     });
@@ -36,6 +36,11 @@ export class Api {
   @memoize()
   public getValidators$(): Observable<string[]> {
     return callPolkaApi(this._substrateApi, 'query.session.validators');
+  }
+
+  @memoize()
+  public checkStakeExisting$(controllerAddress: string): Observable<boolean> {
+    return this.getStakingLedger$(controllerAddress).pipe(map(ledger => !!ledger));
   }
 
   @memoize(identity)

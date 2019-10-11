@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { ApiRx } from '@polkadot/api';
 import { SubmittableExtrinsic, SubmittableResultImpl } from '@polkadot/api/types';
 import { web3FromAddress } from '@polkadot/extension-dapp';
@@ -33,10 +33,22 @@ export class ExtrinsicApi {
     endpoint: E,
     request?: Request<E>,
   ): Promise<void> {
+    const result = new ReplaySubject<SubmittableResultImpl>();
     const extrinsic = await makeSubmittableExtrinsic(this._substrateApi, endpoint, request);
-    const result = await this._signAndSendExtrinsic(extrinsic.submittable, from);
+
+    (await this._signAndSendExtrinsic(extrinsic.submittable, from)).subscribe(result);
     this._pushExtrinsicToQueue(extrinsic, result);
-    await result.toPromise();
+
+    await new Promise((resolve, reject) => {
+      result.subscribe({
+        complete: resolve,
+        error: reject,
+        next: ({ isCompleted, isError }) => {
+          isError && reject(`tx.${endpoint} extrinsic is failed`);
+          isCompleted && resolve();
+        },
+      });
+    });
   }
 
   private async _signAndSendExtrinsic(
