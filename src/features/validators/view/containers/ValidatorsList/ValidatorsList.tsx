@@ -25,12 +25,16 @@ import { useStyles } from './ValidatorsList.style';
 
 const tKeys = tKeysAll.features.validators.list;
 
+type CheckValidatorFunction = (address: string) => () => void;
+
 interface IProps {
   validatorStashes?: string[];
+  checkedValidators?: string[];
+  onCheckValidator?: CheckValidatorFunction;
 }
 
 function ValidatorsList(props: IProps) {
-  const { validatorStashes } = props;
+  const { validatorStashes, checkedValidators, onCheckValidator } = props;
   const { api } = useDeps();
   const [validators, validatorsMeta] = useSubscribable(
     () => (validatorStashes ? of(validatorStashes) : api.getValidators$()),
@@ -53,7 +57,11 @@ function ValidatorsList(props: IProps) {
     t(tKeys.columns.myStake.getKey()),
   ];
 
-  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'left', 'left', 'left', 'left', 'left'];
+  if (checkedValidators) {
+    headerCells.splice(1, 0, '');
+  }
+
+  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'center', 'left', 'left', 'left', 'left', 'left'];
 
   const { items: paginatedValidators, paginationView } = usePagination(validators || []);
 
@@ -97,6 +105,8 @@ function ValidatorsList(props: IProps) {
               address={validatorController}
               isStashAddress={isStashAddresses}
               cellsAlign={cellsAlign}
+              checkedValidators={checkedValidators}
+              onCheckValidator={onCheckValidator}
             />
           ))}
         </TableBody>
@@ -111,9 +121,18 @@ interface IValidatorRowProps {
   address: string;
   cellsAlign: Array<'left' | 'center' | 'right'>;
   isStashAddress: boolean;
+  checkedValidators?: string[];
+  onCheckValidator?: CheckValidatorFunction;
 }
 
-function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidatorRowProps) {
+function ValidatorRow({
+  checkedValidators,
+  onCheckValidator,
+  address,
+  index,
+  cellsAlign,
+  isStashAddress,
+}: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
@@ -144,6 +163,14 @@ function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidator
     );
   };
 
+  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange: CheckValidatorFunction) => {
+    const isChecked = validators.indexOf(currentValidator) !== -1;
+
+    return (
+      <Checkbox checked={isChecked} onChange={onChange(currentValidator)} />
+    );
+  };
+
   const stakers = info && info.stakers;
   const ownStake = stakers && stakers.own;
   const otherStakes = stakers && stakers.total.sub(stakers.own);
@@ -170,6 +197,10 @@ function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidator
     renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [ledgerMeta, infoMeta]),
     renderInfoCell(<BalanceValue input={userStake} />, [ledgerMeta, infoMeta, accountsMeta]),
   ];
+
+  if (checkedValidators && stashAddress && onCheckValidator) {
+    cells.splice(1, 0, renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator));
+  }
 
   return (
     <TableRow>

@@ -81,6 +81,11 @@ export default {
         cancelButtonText: 'Cancel',
         submitButtonText: 'Withdraw money',
       },
+      validatorsListEditingForm: {
+        title: 'Validators List Editing',
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Change validators',
+      },
     },
   },
   modules: {},
