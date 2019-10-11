@@ -17,6 +17,9 @@ export default {
       onEnglishPlease: 'Should contain only english letters and numbers',
       isUsedDaoName: 'Co-op with that name already exists',
       notEnoughDai: 'Not enough dai',
+      isNumber: 'Enter a valid number',
+      decimalsMoreThen: 'Enter a valid number with decimals less than %{decimals} digits',
+      isPositiveNumber: 'Must be positive number',
     },
     pageNotFound: 'We can’t find this page',
     cancel: 'Cancel',
@@ -59,6 +62,24 @@ export default {
           awaitingWithdrawal: 'Awaiting withdrawal',
         },
         notFound: 'Your Substrate accounts can not be found, please install Polkadot.js browser extension and create an account.',
+      },
+    },
+    manageStake: {
+      balanceReplenishmentForm: {
+        title: 'Stake Balance Replenishment',
+        field: {
+          placeholder: 'Enter sum',
+        },
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Replenish balance',
+      },
+      cashWithdrawalForm: {
+        title: 'Cash Withdrawal',
+        field: {
+          placeholder: 'Enter sum',
+        },
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Withdraw money',
       },
     },
   },
