@@ -58,7 +58,7 @@ function ValidatorsList(props: IProps) {
   ];
 
   if (checkedValidators) {
-    headerCells.splice(1, 0, '');
+    headerCells.splice(1, 0, ''); // TODO rewrite without mutation
   }
 
   const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'center', 'left', 'left', 'left', 'left', 'left'];

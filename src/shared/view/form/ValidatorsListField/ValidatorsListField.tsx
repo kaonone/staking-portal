@@ -4,19 +4,22 @@ import { FieldRenderProps } from 'react-final-form';
 import { getFieldWithComponent } from 'shared/helpers/react';
 import { ValidatorsList } from 'features/validators';
 
+interface IInput {
+  value: string[];
+  onChange(value: string[]): void;
+}
+
 function ValidatorsListField(props: FieldRenderProps) {
-  const { input } = props;
+  const { value, onChange } = props.input as IInput;
 
-  const onCheck = useCallback((value: string) => () => {
-    const checkedValidators = input.value;
-    const index = checkedValidators.indexOf(value);
-    const isValidatorChecked = index !== -1;
-
-    return isValidatorChecked ? checkedValidators.splice(index, 1) : checkedValidators.push(value);
-  }, [input]);
+  const onCheck = useCallback((address: string) => () => {
+    const isValidatorChecked = value.includes(address);
+    const nextValue = isValidatorChecked ? value.filter(item => item !== address) : [...value, address];
+    onChange(nextValue);
+  }, [value, onChange]);
 
   return (
-    <ValidatorsList checkedValidators={input.value} onCheckValidator={onCheck} />
+    <ValidatorsList checkedValidators={value} onCheckValidator={onCheck} />
   );
 }
 
