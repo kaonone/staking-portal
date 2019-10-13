@@ -50,16 +50,13 @@ function ValidatorsList(props: IProps) {
 
   const headerCells = [
     '#',
+    ...(checkedValidators ? [''] : []),
     t(tKeys.columns.address.getKey()),
     t(tKeys.columns.ownStake.getKey()),
     t(tKeys.columns.commission.getKey()),
     t(tKeys.columns.otherStakes.getKey()),
     t(tKeys.columns.myStake.getKey()),
   ];
-
-  if (checkedValidators) {
-    headerCells.splice(1, 0, ''); // TODO rewrite without mutation
-  }
 
   const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'center', 'left', 'left', 'left', 'left', 'left'];
 
@@ -191,16 +188,16 @@ function ValidatorRow({
     <Typography key="1" variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>,
+    ...(checkedValidators && stashAddress && onCheckValidator ?
+      [renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator)] :
+      []
+    ),
     renderInfoCell(stashAddress, [ledgerMeta]),
     renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
     renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),
     renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [ledgerMeta, infoMeta]),
     renderInfoCell(<BalanceValue input={userStake} />, [ledgerMeta, infoMeta, accountsMeta]),
   ];
-
-  if (checkedValidators && stashAddress && onCheckValidator) {
-    cells.splice(1, 0, renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator));
-  }
 
   return (
     <TableRow>
