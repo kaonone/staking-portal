@@ -14,6 +14,8 @@ import {
   TableBody,
   CircleProgressBar,
   LinearProgress,
+  Checkbox,
+  Hint,
 } from 'shared/view/elements';
 import BalanceValue from 'components/BalanceValue';
 import { usePagination } from 'shared/view/hooks';
@@ -23,12 +25,16 @@ import { useStyles } from './ValidatorsList.style';
 
 const tKeys = tKeysAll.features.validators.list;
 
+type CheckValidatorFunction = (address: string) => () => void;
+
 interface IProps {
   validatorStashes?: string[];
+  checkedValidators?: string[];
+  onCheckValidator?: CheckValidatorFunction;
 }
 
 function ValidatorsList(props: IProps) {
-  const { validatorStashes } = props;
+  const { validatorStashes, checkedValidators, onCheckValidator } = props;
   const { api } = useDeps();
   const [validators, validatorsMeta] = useSubscribable(
     () => (validatorStashes ? of(validatorStashes) : api.getValidators$()),
@@ -44,6 +50,7 @@ function ValidatorsList(props: IProps) {
 
   const headerCells = [
     '#',
+    ...(checkedValidators ? [''] : []),
     t(tKeys.columns.address.getKey()),
     t(tKeys.columns.ownStake.getKey()),
     t(tKeys.columns.commission.getKey()),
@@ -51,30 +58,38 @@ function ValidatorsList(props: IProps) {
     t(tKeys.columns.myStake.getKey()),
   ];
 
-  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'left', 'left', 'left', 'left', 'left'];
+  const cellsAlign: Array<'left' | 'center' | 'right'> = [
+    'center',
+    ...(checkedValidators ? (['center'] as const) : []),
+    'left',
+    'left',
+    'left',
+    'left',
+    'left',
+  ];
 
   const { items: paginatedValidators, paginationView } = usePagination(validators || []);
 
   if (!validatorsLoaded) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <CircleProgressBar />
-      </div>
+      </Hint>
     );
   }
 
   if (!!validatorsLoadingError) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <Typography color="error">{validatorsLoadingError}</Typography>
-      </div>
+      </Hint>
     );
   }
 
   return !paginatedValidators.length ? (
-    <div className={classes.hint}>
+    <Hint>
       <Typography>{t(tKeys.notFound.getKey())}</Typography>
-    </div>
+    </Hint>
   ) : (
     <div>
       <Table separated>
@@ -95,6 +110,8 @@ function ValidatorsList(props: IProps) {
               address={validatorController}
               isStashAddress={isStashAddresses}
               cellsAlign={cellsAlign}
+              checkedValidators={checkedValidators}
+              onCheckValidator={onCheckValidator}
             />
           ))}
         </TableBody>
@@ -109,9 +126,18 @@ interface IValidatorRowProps {
   address: string;
   cellsAlign: Array<'left' | 'center' | 'right'>;
   isStashAddress: boolean;
+  checkedValidators?: string[];
+  onCheckValidator?: CheckValidatorFunction;
 }
 
-function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidatorRowProps) {
+function ValidatorRow({
+  checkedValidators,
+  onCheckValidator,
+  address,
+  index,
+  cellsAlign,
+  isStashAddress,
+}: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
@@ -142,6 +168,12 @@ function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidator
     );
   };
 
+  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange?: CheckValidatorFunction) => {
+    const isChecked = validators.includes(currentValidator);
+
+    return <Checkbox checked={isChecked} onChange={onChange ? onChange(currentValidator) : undefined} />;
+  };
+
   const stakers = info && info.stakers;
   const ownStake = stakers && stakers.own;
   const otherStakes = stakers && stakers.total.sub(stakers.own);
@@ -162,6 +194,13 @@ function ValidatorRow({ address, index, cellsAlign, isStashAddress }: IValidator
     <Typography key="1" variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>,
+    ...(checkedValidators
+      ? [
+          renderInfoCell(stashAddress && renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator), [
+            ledgerMeta,
+          ]),
+        ]
+      : []),
     renderInfoCell(stashAddress, [ledgerMeta]),
     renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
     renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),

@@ -16,6 +16,7 @@ const styles = (theme: Theme) => ({
   content: {
 
   },
+
   hint: {
     display: 'flex',
     alignItems: 'center',

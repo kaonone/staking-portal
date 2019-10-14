@@ -3,7 +3,7 @@ import { Form } from 'react-final-form';
 
 import { useDeps } from 'core';
 import { TextInputField } from 'shared/view/form';
-import { Button, Typography, Grid, CircleProgressBar } from 'shared/view/elements';
+import { Button, Typography, Grid, CircleProgressBar, Hint } from 'shared/view/elements';
 import { composeValidators, validateFloat, validatePositiveNumber } from 'shared/validators';
 import { useSubscribable } from 'shared/helpers/react';
 
@@ -47,15 +47,17 @@ function BalanceChangingForm(props: IProps) {
 
   if (!chainPropsMeta.loaded) {
     return (
-      // TODO: need to wrap in Hint
-      <CircleProgressBar />
+      <Hint>
+        <CircleProgressBar />
+      </Hint>
     );
   }
 
   if (!!chainPropsMeta.error) {
     return (
-      // TODO: need to wrap in Hint
-      <Typography color="error">{chainPropsMeta.error}</Typography>
+      <Hint>
+        <Typography color="error">{chainPropsMeta.error}</Typography>
+      </Hint>
     );
   }
 
