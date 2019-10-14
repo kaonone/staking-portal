@@ -44,8 +44,6 @@ function ValidatorsList(props: IProps) {
   );
   const { loaded: validatorsLoaded, error: validatorsLoadingError } = validatorsMeta;
 
-  const isStashAddresses = !!validatorStashes;
-
   const classes = useStyles();
   const { t } = useTranslate();
 
@@ -116,12 +114,11 @@ function ValidatorsList(props: IProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {paginatedValidators.map((validatorController, index) => (
+          {paginatedValidators.map((stashAddress, index) => (
             <ValidatorRow
-              key={validatorController}
+              key={stashAddress}
               index={index}
-              address={validatorController}
-              isStashAddress={isStashAddresses}
+              stashAddress={stashAddress}
               cellsAlign={cellsAlign}
               checkedValidators={checkedValidators}
               onCheckValidator={onCheckValidator}
@@ -136,9 +133,8 @@ function ValidatorsList(props: IProps) {
 
 interface IValidatorRowProps {
   index: number;
-  address: string;
+  stashAddress: string;
   cellsAlign: Array<'left' | 'center' | 'right'>;
-  isStashAddress: boolean;
   checkedValidators?: string[];
   onCheckValidator?: CheckValidatorFunction;
 }
@@ -146,25 +142,17 @@ interface IValidatorRowProps {
 function ValidatorRow({
   checkedValidators,
   onCheckValidator,
-  address,
+  stashAddress,
   index,
   cellsAlign,
-  isStashAddress,
 }: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
   const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
 
-  const [ledger, ledgerMeta] = useSubscribable(
-    () => (isStashAddress ? of(null) : api.getStakingLedger$(address)),
-    [address, isStashAddress],
-    null,
-  );
-  const stashAddress = isStashAddress ? address : ledger && ledger.stash;
-
   const [info, infoMeta] = useSubscribable(
-    () => (stashAddress ? api.getStakingInfo$(address) : empty()),
+    () => (stashAddress ? api.getStakingInfo$(stashAddress) : empty()),
     [stashAddress],
     null,
   );
@@ -210,15 +198,15 @@ function ValidatorRow({
     ...(checkedValidators
       ? [
           renderInfoCell(stashAddress && renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator), [
-            ledgerMeta,
+            infoMeta,
           ]),
         ]
       : []),
-    renderInfoCell(stashAddress, [ledgerMeta]),
-    renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(<BalanceValue input={userStake} />, [ledgerMeta, infoMeta, accountsMeta]),
+    renderInfoCell(stashAddress, [infoMeta]),
+    renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [infoMeta]),
+    renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [infoMeta]),
+    renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [infoMeta]),
+    renderInfoCell(<BalanceValue input={userStake} />, [infoMeta, accountsMeta]),
   ];
 
   return (
