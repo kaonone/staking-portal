@@ -139,13 +139,7 @@ interface IValidatorRowProps {
   onCheckValidator?: CheckValidatorFunction;
 }
 
-function ValidatorRow({
-  checkedValidators,
-  onCheckValidator,
-  stashAddress,
-  index,
-  cellsAlign,
-}: IValidatorRowProps) {
+function ValidatorRow({ checkedValidators, onCheckValidator, stashAddress, index, cellsAlign }: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 

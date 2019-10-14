@@ -23,7 +23,8 @@ function ValidatorsListField(props: FieldRenderProps) {
 
   const onCheckAll = useCallback(
     (allValidators: string[]) => () => {
-      const isAllValidatorsChecked = value === allValidators;
+      const isAllValidatorsChecked = allValidators.every(validator => value.includes(validator));
+
       const nextValue = isAllValidatorsChecked
         ? value.filter(item => !allValidators.includes(item))
         : Array.from(new Set([...value, ...allValidators]));
