@@ -1,4 +1,4 @@
-import { Observable, from, fromEventPattern, defer, ReplaySubject } from 'rxjs';
+import { Observable, from, fromEventPattern, defer, ReplaySubject, combineLatest } from 'rxjs';
 import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
@@ -41,7 +41,14 @@ export class Api {
 
   @memoize()
   public getValidators$(): Observable<string[]> {
-    return callPolkaApi(this._substrateApi, 'query.session.validators');
+    // TODO Need to rewrite this after migrating to Substrate v2.
+    // In Substrate v2, `query.session.validators` returns an array of stash addresses
+    return callPolkaApi(this._substrateApi, 'query.session.validators').pipe(
+      switchMap(validatorControllers =>
+        combineLatest(validatorControllers.map(controller => this.getStakingLedger$(controller))),
+      ),
+      map(ledgers => ledgers.filter((ledger): ledger is IStakingLedger => !!ledger).map(ledger => ledger.stash)),
+    );
   }
 
   @memoize()
