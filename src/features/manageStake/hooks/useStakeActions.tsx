@@ -3,12 +3,13 @@ import React from 'react';
 import { useDeps } from 'core';
 import { useTranslate } from 'services/i18n';
 import { ModalButton } from 'shared/view/components';
-import { Button, CircleProgressBar } from 'shared/view/elements';
+import { CircleProgressBar } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
 
 import BalanceReplenishmentForm from '../view/containers/BalanceReplenishmentForm/BalanceReplenishmentForm';
 import CashWithdrawalForm from '../view/containers/CashWithdrawalForm/CashWithdrawalForm';
 import ValidatorsListEditingForm from '../view/containers/ValidatorsListEditingForm/ValidatorsListEditingForm';
+import NominatingStop from '../view/containers/NominatingStop/NominatingStop';
 
 export function useStakeActions(address: string) {
   const { api } = useDeps();
@@ -49,9 +50,9 @@ export function useStakeActions(address: string) {
                 />
               )}
             </ModalButton>,
-            <Button disabled variant="contained" key="Stop nominations">
-              Stop nominations
-            </Button>,
+            <ModalButton key="Stop nominating" variant="contained" content={t(tKeys.stopNominating.getKey())}>
+              {({ closeModal }) => <NominatingStop onCancel={closeModal} address={address} />}
+            </ModalButton>,
           ],
     [isEmptyNominees, address, nominators],
   );

@@ -93,6 +93,12 @@ export default {
         cancelButtonText: 'Cancel',
         submitButtonText: 'Change validators',
       },
+      nominatingStop: {
+        title: 'Nominating Stop',
+        description: 'Are you sure that you want to stop nominating?',
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Stop nominating',
+      },
     },
   },
   modules: {},
