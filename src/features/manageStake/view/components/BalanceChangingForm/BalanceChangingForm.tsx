@@ -64,10 +64,10 @@ function BalanceChangingForm(props: IProps) {
   return (
     <Form onSubmit={onSubmit} initialValues={initialValues} subscription={{ submitError: true, submitting: true }}>
       {({ handleSubmit, submitError, submitting }) => (
-        <form onSubmit={handleSubmit} className={classes.root}>
+        <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h5" weight="bold" noWrap gutterBottom>
+              <Typography variant="h5" weight="bold" noWrap gutterBottom className={classes.title}>
                 {title}
               </Typography>
               <TextInputField
