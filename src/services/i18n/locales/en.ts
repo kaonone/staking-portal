@@ -82,7 +82,7 @@ export default {
         submitButtonText: 'Withdraw money',
       },
       validatorsListEditingForm: {
-        title: 'Validators List Editing',
+        title: 'Edit Nominees',
         cancelButtonText: 'Cancel',
         submitButtonText: 'Change validators',
       },

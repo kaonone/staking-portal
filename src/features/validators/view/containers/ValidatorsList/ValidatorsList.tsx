@@ -58,7 +58,15 @@ function ValidatorsList(props: IProps) {
     t(tKeys.columns.myStake.getKey()),
   ];
 
-  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'center', 'left', 'left', 'left', 'left', 'left'];
+  const cellsAlign: Array<'left' | 'center' | 'right'> = [
+    'center',
+    ...(checkedValidators ? (['center'] as const) : []),
+    'left',
+    'left',
+    'left',
+    'left',
+    'left',
+  ];
 
   const { items: paginatedValidators, paginationView } = usePagination(validators || []);
 
@@ -160,12 +168,10 @@ function ValidatorRow({
     );
   };
 
-  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange: CheckValidatorFunction) => {
-    const isChecked = validators.indexOf(currentValidator) !== -1;
+  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange?: CheckValidatorFunction) => {
+    const isChecked = validators.includes(currentValidator);
 
-    return (
-      <Checkbox checked={isChecked} onChange={onChange(currentValidator)} />
-    );
+    return <Checkbox checked={isChecked} onChange={onChange ? onChange(currentValidator) : undefined} />;
   };
 
   const stakers = info && info.stakers;
@@ -188,10 +194,13 @@ function ValidatorRow({
     <Typography key="1" variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>,
-    ...(checkedValidators && stashAddress && onCheckValidator ?
-      [renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator)] :
-      []
-    ),
+    ...(checkedValidators
+      ? [
+          renderInfoCell(stashAddress && renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator), [
+            ledgerMeta,
+          ]),
+        ]
+      : []),
     renderInfoCell(stashAddress, [ledgerMeta]),
     renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
     renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),

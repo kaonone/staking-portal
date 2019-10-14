@@ -41,7 +41,7 @@ function ValidatorsListEditingForm() {
       <Form onSubmit={onSubmit} initialValues={initialValues}>
         {props => (
           <form onSubmit={props.handleSubmit} className={classes.root}>
-            <Grid container justify={'space-between'} spacing={2}>
+            <Grid container justify="center" spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="h5" weight="bold" noWrap gutterBottom>
                   {t(tKeys.title.getKey())}

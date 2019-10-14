@@ -17,6 +17,15 @@ const styles = (theme: Theme) => ({
 
   },
 
+  hint: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.75rem 1.375rem',
+    fontSize: '0.75rem',
+    border: `solid 0.125rem ${colors.silver}`,
+    borderRadius: '0.25rem',
+  },
+
   hintIcon: {
     marginRight: '1.875rem',
     fontSize: '2rem',
