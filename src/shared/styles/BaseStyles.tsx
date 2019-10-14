@@ -9,7 +9,7 @@ const styles = {
       boxSizing: 'border-box',
       WebkitFontSmoothing: 'antialiased',
       MozOsxFontSmoothing: 'grayscale',
-      fontSize: 16, // TODO: use rems everywhere in the project
+      fontSize: 16,
       fontFamily: 'OpenSans, sans-serif',
     },
     body: {

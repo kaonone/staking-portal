@@ -1,5 +1,6 @@
 import { Observable, from, fromEventPattern, defer, ReplaySubject } from 'rxjs';
-import { switchMap, retry } from 'rxjs/operators';
+import { switchMap, retry, map } from 'rxjs/operators';
+import BN from 'bn.js';
 import { identity } from 'ramda';
 import { ApiRx } from '@polkadot/api';
 import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
@@ -8,13 +9,44 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { memoize, delay } from 'shared/helpers';
 import { callPolkaApi } from './callPolkaApi';
 import { IStakingLedger, IDerivedStaking, IChainProperties } from './callPolkaApi/types';
+import { ExtrinsicApi, ISubmittedExtrinsic, Payee } from './ExtrinsicApi';
 
 export class Api {
+  private _extrinsicApi = new ExtrinsicApi(this._substrateApi);
   constructor(private _substrateApi: Observable<ApiRx>) {}
+
+  public getExtrinsicsQueue$(): Observable<ISubmittedExtrinsic[]> {
+    return this._extrinsicApi.getExtrinsicsQueue$();
+  }
+
+  public async createStake(fromAddress: string, value: BN): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.bond', {
+      controller: fromAddress,
+      payee: Payee.staked,
+      value,
+    });
+  }
+
+  public async depositToStake(fromAddress: string, maxAdditionalValue: BN): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.bondExtra', {
+      maxAdditionalValue,
+    });
+  }
+
+  public async withdrawFromStake(fromAddress: string, amount: BN): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.unbond', {
+      value: amount,
+    });
+  }
 
   @memoize()
   public getValidators$(): Observable<string[]> {
     return callPolkaApi(this._substrateApi, 'query.session.validators');
+  }
+
+  @memoize()
+  public checkStakeExisting$(controllerAddress: string): Observable<boolean> {
+    return this.getStakingLedger$(controllerAddress).pipe(map(ledger => !!ledger));
   }
 
   @memoize(identity)

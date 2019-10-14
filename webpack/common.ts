@@ -224,14 +224,11 @@ export const commonConfig: webpack.Configuration = {
     chunkFilename: `js/[${chunkName}]-[${chunkHash}].bundle.js`,
   },
   resolve: {
-    modules: ['node_modules', 'src', path.resolve('ethereum-contracts', 'build')],
+    modules: ['node_modules', 'src'],
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     plugins: withHot ? [
       new ReactJssHmrPlugin(),
     ] : undefined,
-    alias: {
-      'ethers$': 'ethers/dist/ethers.js',
-    },
   },
   optimization: {
     runtimeChunk: 'single',

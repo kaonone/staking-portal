@@ -40,10 +40,10 @@ function ValidatorsListEditingForm() {
     <>
       <Form onSubmit={onSubmit} initialValues={initialValues}>
         {props => (
-          <form onSubmit={props.handleSubmit} className={classes.root}>
+          <form onSubmit={props.handleSubmit}>
             <Grid container justify="center" spacing={2}>
               <Grid item xs={12}>
-                <Typography variant="h5" weight="bold" noWrap gutterBottom>
+                <Typography variant="h5" weight="bold" noWrap gutterBottom className={classes.title}>
                   {t(tKeys.title.getKey())}
                 </Typography>
                 <ValidatorsListField name={fieldNames.checkedValidators} />

@@ -1,7 +1,7 @@
 import { makeStyles, colors } from 'shared/styles';
 
 export const useStyles = makeStyles({
-  root: {
+  title: {
     color: colors.topaz,
   },
 });

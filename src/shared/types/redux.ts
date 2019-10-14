@@ -26,7 +26,6 @@ export interface ICommunication<E = string> {
   error: E;
 }
 
-// TODO: remove
 export type ReducersMap<T> = {
   [key in keyof T]: Reducer<T[key]>;
 };

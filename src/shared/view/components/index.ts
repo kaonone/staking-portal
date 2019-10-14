@@ -3,3 +3,4 @@ export { default as DrawerModal } from './DrawerModal/DrawerModal';
 export { default as Pagination } from './Pagination/Pagination';
 export { default as Metric } from './Metric/Metric';
 export { default as RetryDialog } from './RetryDialog';
+export { default as ModalButton } from './ModalButton/ModalButton';
