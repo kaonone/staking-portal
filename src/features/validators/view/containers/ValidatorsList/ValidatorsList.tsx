@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { empty, of } from 'rxjs';
+import { of } from 'rxjs';
 import { pluck } from 'ramda';
 import BN from 'bn.js';
 
@@ -25,16 +25,16 @@ import { useStyles } from './ValidatorsList.style';
 
 const tKeys = tKeysAll.features.validators.list;
 
-type CheckValidatorFunction = (address: string) => () => void;
+type MakeValidatorsCheckingHandler = (address: string | string[]) => () => void;
 
 interface IProps {
   validatorStashes?: string[];
   checkedValidators?: string[];
-  onCheckValidator?: CheckValidatorFunction;
+  makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
 }
 
 function ValidatorsList(props: IProps) {
-  const { validatorStashes, checkedValidators, onCheckValidator } = props;
+  const { validatorStashes, checkedValidators, makeValidatorsCheckingHandler } = props;
   const { api } = useDeps();
   const [validators, validatorsMeta] = useSubscribable(
     () => (validatorStashes ? of(validatorStashes) : api.getValidators$()),
@@ -43,14 +43,26 @@ function ValidatorsList(props: IProps) {
   );
   const { loaded: validatorsLoaded, error: validatorsLoadingError } = validatorsMeta;
 
-  const isStashAddresses = !!validatorStashes;
-
   const classes = useStyles();
   const { t } = useTranslate();
 
+  const { items: paginatedValidators, paginationView } = usePagination(validators || []);
+
+  const renderCheckboxHeaderCell = () => {
+    const isChecked =
+      checkedValidators && paginatedValidators.every(validator => checkedValidators.includes(validator));
+
+    return (
+      <Checkbox
+        checked={isChecked}
+        onChange={makeValidatorsCheckingHandler ? makeValidatorsCheckingHandler(paginatedValidators) : undefined}
+      />
+    );
+  };
+
   const headerCells = [
     '#',
-    ...(checkedValidators ? [''] : []),
+    ...(checkedValidators ? [renderCheckboxHeaderCell()] : []),
     t(tKeys.columns.address.getKey()),
     t(tKeys.columns.ownStake.getKey()),
     t(tKeys.columns.commission.getKey()),
@@ -67,8 +79,6 @@ function ValidatorsList(props: IProps) {
     'left',
     'left',
   ];
-
-  const { items: paginatedValidators, paginationView } = usePagination(validators || []);
 
   if (!validatorsLoaded) {
     return (
@@ -103,15 +113,14 @@ function ValidatorsList(props: IProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {paginatedValidators.map((validatorController, index) => (
+          {paginatedValidators.map((stashAddress, index) => (
             <ValidatorRow
-              key={validatorController}
+              key={stashAddress}
               index={index}
-              address={validatorController}
-              isStashAddress={isStashAddresses}
+              stashAddress={stashAddress}
               cellsAlign={cellsAlign}
               checkedValidators={checkedValidators}
-              onCheckValidator={onCheckValidator}
+              makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
             />
           ))}
         </TableBody>
@@ -123,38 +132,25 @@ function ValidatorsList(props: IProps) {
 
 interface IValidatorRowProps {
   index: number;
-  address: string;
+  stashAddress: string;
   cellsAlign: Array<'left' | 'center' | 'right'>;
-  isStashAddress: boolean;
   checkedValidators?: string[];
-  onCheckValidator?: CheckValidatorFunction;
+  makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
 }
 
 function ValidatorRow({
   checkedValidators,
-  onCheckValidator,
-  address,
+  makeValidatorsCheckingHandler,
+  stashAddress,
   index,
   cellsAlign,
-  isStashAddress,
 }: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
   const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
 
-  const [ledger, ledgerMeta] = useSubscribable(
-    () => (isStashAddress ? of(null) : api.getStakingLedger$(address)),
-    [address, isStashAddress],
-    null,
-  );
-  const stashAddress = isStashAddress ? address : ledger && ledger.stash;
-
-  const [info, infoMeta] = useSubscribable(
-    () => (stashAddress ? api.getStakingInfo$(address) : empty()),
-    [stashAddress],
-    null,
-  );
+  const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stashAddress), [stashAddress], null);
 
   const renderInfoCell = (content: React.ReactNode, metas: Array<{ loaded: boolean; error: string | null }>) => {
     const loaded = metas.every(value => value.loaded);
@@ -168,7 +164,11 @@ function ValidatorRow({
     );
   };
 
-  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange?: CheckValidatorFunction) => {
+  const renderCheckboxCell = (
+    validators: string[],
+    currentValidator: string,
+    onChange?: MakeValidatorsCheckingHandler,
+  ) => {
     const isChecked = validators.includes(currentValidator);
 
     return <Checkbox checked={isChecked} onChange={onChange ? onChange(currentValidator) : undefined} />;
@@ -194,18 +194,12 @@ function ValidatorRow({
     <Typography key="1" variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>,
-    ...(checkedValidators
-      ? [
-          renderInfoCell(stashAddress && renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator), [
-            ledgerMeta,
-          ]),
-        ]
-      : []),
-    renderInfoCell(stashAddress, [ledgerMeta]),
-    renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [ledgerMeta, infoMeta]),
-    renderInfoCell(<BalanceValue input={userStake} />, [ledgerMeta, infoMeta, accountsMeta]),
+    ...(checkedValidators ? [renderCheckboxCell(checkedValidators, stashAddress, makeValidatorsCheckingHandler)] : []),
+    renderInfoCell(stashAddress, []),
+    renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [infoMeta]),
+    renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [infoMeta]),
+    renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [infoMeta]),
+    renderInfoCell(<BalanceValue input={userStake} />, [infoMeta, accountsMeta]),
   ];
 
   return (

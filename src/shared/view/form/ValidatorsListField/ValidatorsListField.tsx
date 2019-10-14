@@ -12,15 +12,27 @@ interface IInput {
 function ValidatorsListField(props: FieldRenderProps) {
   const { value, onChange } = props.input as IInput;
 
-  const onCheck = useCallback((address: string) => () => {
-    const isValidatorChecked = value.includes(address);
-    const nextValue = isValidatorChecked ? value.filter(item => item !== address) : [...value, address];
-    onChange(nextValue);
-  }, [value, onChange]);
+  const makeHandler = useCallback(
+    (validators: string | string[]) => () => {
+      if (typeof validators === 'string') {
+        const address = validators;
 
-  return (
-    <ValidatorsList checkedValidators={value} onCheckValidator={onCheck} />
+        const isValidatorChecked = value.includes(address);
+        const nextValue = isValidatorChecked ? value.filter(item => item !== address) : [...value, address];
+
+        onChange(nextValue);
+      } else {
+        const isAllValidatorsChecked =
+          value.length === validators.length && validators.every(validator => value.includes(validator));
+        const nextValue = isAllValidatorsChecked ? [] : validators;
+
+        onChange(nextValue);
+      }
+    },
+    [value, onChange],
   );
+
+  return <ValidatorsList checkedValidators={value} makeValidatorsCheckingHandler={makeHandler} />;
 }
 
 export default getFieldWithComponent(ValidatorsListField);
