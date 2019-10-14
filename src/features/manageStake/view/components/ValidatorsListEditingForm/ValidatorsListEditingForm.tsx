@@ -3,7 +3,7 @@ import { Form } from 'react-final-form';
 import Grid from '@material-ui/core/Grid';
 
 import { tKeys as tKeysAll, useTranslate } from 'services/i18n';
-import { Button, Typography } from 'shared/view/elements';
+import { Button, Typography, Hint, CircleProgressBar } from 'shared/view/elements';
 import ValidatorsListField from 'shared/view/form/ValidatorsListField/ValidatorsListField';
 
 import { useStyles } from './ValidatorsListEditingForm.style';
@@ -15,32 +15,30 @@ interface IFormData {
 const fieldNames: { [K in keyof IFormData]: K } = {
   checkedValidators: 'checkedValidators',
 };
+interface IProps {
+  initialCheckedValidators: string[];
+  onSubmit: (values: IFormData) => void;
+  onCancel: () => void;
+}
 
-function ValidatorsListEditingForm() {
+function ValidatorsListEditingForm(props: IProps) {
+  const { initialCheckedValidators, onCancel, onSubmit } = props;
   const classes = useStyles();
   const { t } = useTranslate();
   const tKeys = tKeysAll.features.manageStake.validatorsListEditingForm;
 
   const initialValues = React.useMemo<IFormData>(
     () => ({
-      checkedValidators: [],
+      checkedValidators: initialCheckedValidators,
     }),
-    [],
+    [initialCheckedValidators.toString()],
   );
-
-  const onSubmit = (value: IFormData) => {
-    console.log('Submit form', value);
-  };
-
-  const onCancel = () => {
-    console.log('Cancel form');
-  };
 
   return (
     <>
-      <Form onSubmit={onSubmit} initialValues={initialValues}>
-        {props => (
-          <form onSubmit={props.handleSubmit}>
+      <Form onSubmit={onSubmit} initialValues={initialValues} subscription={{ submitError: true, submitting: true }}>
+        {({ handleSubmit, submitError, submitting }) => (
+          <form onSubmit={handleSubmit}>
             <Grid container justify="center" spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="h5" weight="bold" noWrap gutterBottom className={classes.title}>
@@ -48,14 +46,21 @@ function ValidatorsListEditingForm() {
                 </Typography>
                 <ValidatorsListField name={fieldNames.checkedValidators} />
               </Grid>
+              {!!submitError && (
+                <Grid item xs={12}>
+                  <Hint>
+                    <Typography color="error">{submitError}</Typography>
+                  </Hint>
+                </Grid>
+              )}
               <Grid item xs={3}>
                 <Button variant="outlined" color="primary" fullWidth onClick={onCancel}>
                   {t(tKeys.cancelButtonText.getKey())}
                 </Button>
               </Grid>
               <Grid item xs={3}>
-                <Button variant="contained" color="primary" type="submit" fullWidth>
-                  {t(tKeys.submitButtonText.getKey())}
+                <Button variant="contained" color="primary" type="submit" fullWidth disabled={submitting}>
+                  {submitting ? <CircleProgressBar size={24} /> : t(tKeys.submitButtonText.getKey())}
                 </Button>
               </Grid>
             </Grid>
@@ -66,4 +71,5 @@ function ValidatorsListEditingForm() {
   );
 }
 
+export { IFormData };
 export default ValidatorsListEditingForm;

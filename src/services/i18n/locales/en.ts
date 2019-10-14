@@ -81,10 +81,23 @@ export default {
         cancelButtonText: 'Cancel',
         submitButtonText: 'Withdraw money',
       },
+      actions: {
+        withdraw: 'Withdraw',
+        deposit: 'Deposit',
+        nominate: 'Nominate',
+        editNominees: 'Edit nominees',
+        stopNominating: 'Stop nominating',
+      },
       validatorsListEditingForm: {
         title: 'Edit Nominees',
         cancelButtonText: 'Cancel',
         submitButtonText: 'Change validators',
+      },
+      nominatingStop: {
+        title: 'Nominating Stop',
+        description: 'Are you sure that you want to stop nominating?',
+        cancelButtonText: 'Cancel',
+        submitButtonText: 'Stop nominating',
       },
     },
   },

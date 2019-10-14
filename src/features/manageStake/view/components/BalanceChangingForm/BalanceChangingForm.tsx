@@ -78,6 +78,13 @@ function BalanceChangingForm(props: IProps) {
                 fullWidth
               />
             </Grid>
+            {!!submitError && (
+              <Grid item xs={12}>
+                <Hint>
+                  <Typography color="error">{submitError}</Typography>
+                </Hint>
+              </Grid>
+            )}
             <Grid item xs={6}>
               <Button variant="outlined" color="primary" fullWidth onClick={onCancel}>
                 {cancelButtonText}
@@ -88,13 +95,6 @@ function BalanceChangingForm(props: IProps) {
                 {submitting ? <CircleProgressBar size={24} /> : submitButtonText}
               </Button>
             </Grid>
-            {!!submitError && (
-              <Grid item xs={12}>
-                <Hint>
-                  <Typography color="error">{submitError}</Typography>
-                </Hint>
-              </Grid>
-            )}
           </Grid>
         </form>
       )}

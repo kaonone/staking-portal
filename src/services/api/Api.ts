@@ -39,6 +39,17 @@ export class Api {
     });
   }
 
+  public async editNominees(fromAddress: string, nextNominees: string[]): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.nominate', {
+      nextNominees,
+    });
+  }
+
+  public async stopNominating(fromAddress: string): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.chill');
+  }
+
+  // TODO need to update stream after stopNominating
   @memoize()
   public getValidators$(): Observable<string[]> {
     // TODO Need to rewrite this after migrating to Substrate v2.

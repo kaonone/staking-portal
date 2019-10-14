@@ -25,20 +25,26 @@ interface IUnbondRequest {
   value: BN;
 }
 
+interface INominateRequest {
+  nextNominees: string[];
+}
+
 /**** Converted Request Types ****/
 
 type ConvertedBondRequest = [string, BN, Payee];
 type ConvertedBondExtraRequest = [BN];
 type ConvertedUnbondRequest = [BN];
+type ConvertedNominateRequest = [string[]];
 
 /********/
 
-// [Endpoint]: [Request, ConvertedRequestForApi, ApiResponse, ConvertedResponse]
+// [Endpoint]: [Request, ConvertedRequestForApi]
 interface ISignatures {
   'staking.bond': [IBondRequest, ConvertedBondRequest];
   'staking.bondExtra': [IBondExtraRequest, ConvertedBondExtraRequest];
   'staking.unbond': [IUnbondRequest, ConvertedUnbondRequest];
-  'mock.without.request': [null, null];
+  'staking.nominate': [INominateRequest, ConvertedNominateRequest];
+  'staking.chill': [null, null];
 }
 
 export type Endpoint = keyof ISignatures;
