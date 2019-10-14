@@ -17,7 +17,6 @@ const styles = () => ({
 
 } as const);
 
-// TODO ds: rewrite after transition to @material-ui/styles
 export const provideStyles = withStyles(styles);
 
 export type StylesProps = WithStyles<typeof styles>;

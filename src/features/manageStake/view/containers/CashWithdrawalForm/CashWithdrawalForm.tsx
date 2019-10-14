@@ -4,7 +4,7 @@ import { FORM_ERROR } from 'final-form';
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
-import { CircleProgressBar, Typography } from 'shared/view/elements';
+import { CircleProgressBar, Typography, Hint } from 'shared/view/elements';
 import { toBaseUnit, getErrorMsg } from 'shared/helpers';
 import { useSubscribable } from 'shared/helpers/react';
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
@@ -39,15 +39,17 @@ function CashWithdrawalForm(props: IProps) {
 
   if (!chainPropsMeta.loaded) {
     return (
-      // TODO: need to wrap in Hint
-      <CircleProgressBar />
+      <Hint>
+        <CircleProgressBar />
+      </Hint>
     );
   }
 
   if (!!chainPropsMeta.error) {
     return (
-      // TODO: need to wrap in Hint
-      <Typography color="error">{chainPropsMeta.error}</Typography>
+      <Hint>
+        <Typography color="error">{chainPropsMeta.error}</Typography>
+      </Hint>
     );
   }
 

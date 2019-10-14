@@ -90,8 +90,9 @@ function BalanceChangingForm(props: IProps) {
             </Grid>
             {!!submitError && (
               <Grid item xs={12}>
-                {/* TODO: need to wrap in Hint */}
-                <Typography color="error">{submitError}</Typography>
+                <Hint>
+                  <Typography color="error">{submitError}</Typography>
+                </Hint>
               </Grid>
             )}
           </Grid>
