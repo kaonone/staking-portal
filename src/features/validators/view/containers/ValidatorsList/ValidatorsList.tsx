@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { empty, of } from 'rxjs';
+import { of } from 'rxjs';
 import { pluck } from 'ramda';
 import BN from 'bn.js';
 
@@ -25,17 +25,16 @@ import { useStyles } from './ValidatorsList.style';
 
 const tKeys = tKeysAll.features.validators.list;
 
-type CheckValidatorFunction = (address: string) => () => void;
+type MakeValidatorsCheckingHandler = (address: string | string[]) => () => void;
 
 interface IProps {
   validatorStashes?: string[];
   checkedValidators?: string[];
-  onCheckValidator?: CheckValidatorFunction;
-  onCheckAllValidators?: (allValidators: string[]) => () => void;
+  makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
 }
 
 function ValidatorsList(props: IProps) {
-  const { validatorStashes, checkedValidators, onCheckValidator, onCheckAllValidators } = props;
+  const { validatorStashes, checkedValidators, makeValidatorsCheckingHandler } = props;
   const { api } = useDeps();
   const [validators, validatorsMeta] = useSubscribable(
     () => (validatorStashes ? of(validatorStashes) : api.getValidators$()),
@@ -56,7 +55,7 @@ function ValidatorsList(props: IProps) {
     return (
       <Checkbox
         checked={isChecked}
-        onChange={onCheckAllValidators ? onCheckAllValidators(paginatedValidators) : undefined}
+        onChange={makeValidatorsCheckingHandler ? makeValidatorsCheckingHandler(paginatedValidators) : undefined}
       />
     );
   };
@@ -121,7 +120,7 @@ function ValidatorsList(props: IProps) {
               stashAddress={stashAddress}
               cellsAlign={cellsAlign}
               checkedValidators={checkedValidators}
-              onCheckValidator={onCheckValidator}
+              makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
             />
           ))}
         </TableBody>
@@ -136,20 +135,22 @@ interface IValidatorRowProps {
   stashAddress: string;
   cellsAlign: Array<'left' | 'center' | 'right'>;
   checkedValidators?: string[];
-  onCheckValidator?: CheckValidatorFunction;
+  makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
 }
 
-function ValidatorRow({ checkedValidators, onCheckValidator, stashAddress, index, cellsAlign }: IValidatorRowProps) {
+function ValidatorRow({
+  checkedValidators,
+  makeValidatorsCheckingHandler,
+  stashAddress,
+  index,
+  cellsAlign,
+}: IValidatorRowProps) {
   const classes = useStyles();
   const { api } = useDeps();
 
   const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
 
-  const [info, infoMeta] = useSubscribable(
-    () => (stashAddress ? api.getStakingInfo$(stashAddress) : empty()),
-    [stashAddress],
-    null,
-  );
+  const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stashAddress), [stashAddress], null);
 
   const renderInfoCell = (content: React.ReactNode, metas: Array<{ loaded: boolean; error: string | null }>) => {
     const loaded = metas.every(value => value.loaded);
@@ -163,7 +164,11 @@ function ValidatorRow({ checkedValidators, onCheckValidator, stashAddress, index
     );
   };
 
-  const renderCheckboxCell = (validators: string[], currentValidator: string, onChange?: CheckValidatorFunction) => {
+  const renderCheckboxCell = (
+    validators: string[],
+    currentValidator: string,
+    onChange?: MakeValidatorsCheckingHandler,
+  ) => {
     const isChecked = validators.includes(currentValidator);
 
     return <Checkbox checked={isChecked} onChange={onChange ? onChange(currentValidator) : undefined} />;
@@ -189,14 +194,8 @@ function ValidatorRow({ checkedValidators, onCheckValidator, stashAddress, index
     <Typography key="1" variant="body1" className={classes.memberNumber}>
       {index + 1}
     </Typography>,
-    ...(checkedValidators
-      ? [
-          renderInfoCell(stashAddress && renderCheckboxCell(checkedValidators, stashAddress, onCheckValidator), [
-            infoMeta,
-          ]),
-        ]
-      : []),
-    renderInfoCell(stashAddress, [infoMeta]),
+    ...(checkedValidators ? [renderCheckboxCell(checkedValidators, stashAddress, makeValidatorsCheckingHandler)] : []),
+    renderInfoCell(stashAddress, []),
     renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [infoMeta]),
     renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [infoMeta]),
     renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [infoMeta]),
