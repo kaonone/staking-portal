@@ -6,7 +6,16 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 import {
-  Table, TableHead, TableRow, TableCell, Typography, TableBody, CircleProgressBar, LinearProgress, IconButton,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  Typography,
+  TableBody,
+  CircleProgressBar,
+  LinearProgress,
+  IconButton,
+  Hint,
 } from 'shared/view/elements';
 import { OpenInNewOutlined } from 'shared/view/elements/Icons';
 import BalanceValue from 'components/BalanceValue';
@@ -44,25 +53,25 @@ function StakesList(props: IProps) {
 
   if (!accountsLoaded) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <CircleProgressBar />
-      </div>
+      </Hint>
     );
   }
 
   if (!!accountsLoadingError) {
     return (
-      <div className={classes.hint}>
+      <Hint>
         <Typography color="error">{accountsLoadingError}</Typography>
-      </div>
+      </Hint>
     );
   }
 
   return !paginatedAccounts.length
     ? (
-      <div className={classes.hint}>
+      <Hint>
         <Typography>{t(tKeys.notFound.getKey())}</Typography>
-      </div>
+      </Hint>
     ) : (
       <div>
         <Table separated>
