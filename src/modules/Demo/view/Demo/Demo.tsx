@@ -15,7 +15,11 @@ function Demo(_props: RouteComponentProps<any>) {
       <Grid container justify="center" spacing={10}>
         <Grid item xs={12}>
           <Box mb={10}>
-            <ValidatorsListEditingForm />
+            <ValidatorsListEditingForm
+              initialCheckedValidators={[]}
+              onCancel={console.log.bind(null, 'Cancel form')}
+              onSubmit={console.log.bind(null, 'Submit form')}
+            />
           </Box>
         </Grid>
       </Grid>
