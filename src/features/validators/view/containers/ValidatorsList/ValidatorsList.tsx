@@ -31,10 +31,11 @@ interface IProps {
   validatorStashes?: string[];
   checkedValidators?: string[];
   onCheckValidator?: CheckValidatorFunction;
+  onCheckAllValidators?: (allValidators: string[]) => () => void;
 }
 
 function ValidatorsList(props: IProps) {
-  const { validatorStashes, checkedValidators, onCheckValidator } = props;
+  const { validatorStashes, checkedValidators, onCheckValidator, onCheckAllValidators } = props;
   const { api } = useDeps();
   const [validators, validatorsMeta] = useSubscribable(
     () => (validatorStashes ? of(validatorStashes) : api.getValidators$()),
@@ -48,9 +49,23 @@ function ValidatorsList(props: IProps) {
   const classes = useStyles();
   const { t } = useTranslate();
 
+  const { items: paginatedValidators, paginationView } = usePagination(validators || []);
+
+  const renderCheckboxHeaderCell = () => {
+    const isChecked =
+      checkedValidators && paginatedValidators.every(validator => checkedValidators.includes(validator));
+
+    return (
+      <Checkbox
+        checked={isChecked}
+        onChange={onCheckAllValidators ? onCheckAllValidators(paginatedValidators) : undefined}
+      />
+    );
+  };
+
   const headerCells = [
     '#',
-    ...(checkedValidators ? [''] : []),
+    ...(checkedValidators ? [renderCheckboxHeaderCell()] : []),
     t(tKeys.columns.address.getKey()),
     t(tKeys.columns.ownStake.getKey()),
     t(tKeys.columns.commission.getKey()),
@@ -67,8 +82,6 @@ function ValidatorsList(props: IProps) {
     'left',
     'left',
   ];
-
-  const { items: paginatedValidators, paginationView } = usePagination(validators || []);
 
   if (!validatorsLoaded) {
     return (
