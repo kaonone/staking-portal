@@ -15,7 +15,7 @@ import {
   NominatorsCountCell,
   StakeSizeCell,
   RedeemableCell,
-} from '../../components/stakesTableCells';
+} from '../../components/stakesTableCells/stakesTableCells';
 import { useStyles } from './StakesList.style';
 
 const Table = GenericTable as MakeTableType<InjectedAccountWithMeta>;

@@ -43,25 +43,29 @@ function Table<T>(props: ITableProps<T>) {
     cellProps: (filterChildrenByName(column.props.children, 'Cell')[0] || {}).props,
   }));
 
+  const needToRenderHead = columns.every(column => column.headProps);
+
   return (
     <table
       className={cn(classes.root, className, {
         [classes.separated]: separated,
       })}
     >
-      <thead>
-        <tr>
-          {columns.map(({ headProps }, index) =>
-            headProps ? (
-              <td key={index} align={headProps.align}>
-                {headProps.children}
-              </td>
-            ) : (
-              <td key={index} />
-            ),
-          )}
-        </tr>
-      </thead>
+      {needToRenderHead && (
+        <thead>
+          <tr>
+            {columns.map(({ headProps }, index) =>
+              headProps ? (
+                <td key={index} align={headProps.align}>
+                  {headProps.children}
+                </td>
+              ) : (
+                <td key={index} />
+              ),
+            )}
+          </tr>
+        </thead>
+      )}
       <tbody>
         {data.map((dataRow, index) => (
           <tr key={index} className={cn(props.className, { [classes.clickable]: !!props.onClick })}>
