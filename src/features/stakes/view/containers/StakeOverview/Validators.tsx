@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDeps } from 'core';
 
 import { ValidatorsList } from 'features/validators';
-import { Grid, Typography, CircleProgressBar, Hint } from 'shared/view/elements';
+import { Typography, CircleProgressBar, Hint } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
 
 interface IProps {
@@ -17,7 +17,7 @@ function Validators(props: IProps) {
   const nominees = (info && info.nominators) || [];
 
   return (
-    <Grid item xs={12}>
+    <>
       <Typography variant="h4" gutterBottom>
         Nominees
       </Typography>
@@ -38,7 +38,7 @@ function Validators(props: IProps) {
         ) : (
           <Hint>Your stake is not nominated</Hint>
         ))}
-    </Grid>
+    </>
   );
 }
 
