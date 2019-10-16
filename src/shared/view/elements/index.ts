@@ -1,5 +1,5 @@
 export * from './Input';
-export * from './Table/Table';
+export { default as Table } from './Table/Table';
 export { default as Checkbox } from './Checkbox/Checkbox';
 export { default as CheckboxInput } from './CheckboxInput/CheckboxInput';
 export { default as CircleProgressBar } from './CircleProgressBar/CircleProgressBar';

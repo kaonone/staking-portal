@@ -57,12 +57,10 @@ export const useStyles = makeStyles((theme: Theme) => {
       },
     },
 
+    clickable: {
+      cursor: 'pointer',
+    },
+
     separated: {},
   } as const;
-});
-
-export const useTableRowStyles = makeStyles({
-  clickable: {
-    cursor: 'pointer',
-  },
 });
