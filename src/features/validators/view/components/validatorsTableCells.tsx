@@ -3,11 +3,11 @@ import BN from 'bn.js';
 import { pluck } from 'ramda';
 import { useDeps } from 'core';
 
-import { Checkbox } from 'shared/view/elements';
-import { useSubscribable } from 'shared/helpers/react';
 import BalanceValue from 'components/BalanceValue';
-import { MakeValidatorsCheckingHandler } from 'features/validators/view/containers/ValidatorsList/ValidatorsList';
-import Loading from 'shared/view/elements/Loading/Loading';
+import { Checkbox, Loading } from 'shared/view/elements';
+import { useSubscribable } from 'shared/helpers/react';
+
+import { MakeValidatorsCheckingHandler } from '../../types';
 
 interface ICellProps {
   stashAddress: string;
@@ -34,7 +34,7 @@ function OwnStakeCell({ stashAddress }: ICellProps) {
   const stakers = info && info.stakers;
   const ownStake = stakers && stakers.own;
 
-  return <Loading metas={[infoMeta]}>{ownStake && <BalanceValue input={ownStake} />}</Loading>;
+  return <Loading meta={infoMeta}>{ownStake && <BalanceValue input={ownStake} />}</Loading>;
 }
 
 function ValidatorCommissionCell({ stashAddress }: ICellProps) {
@@ -42,7 +42,7 @@ function ValidatorCommissionCell({ stashAddress }: ICellProps) {
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stashAddress), [stashAddress], null);
   const validatorCommission = info && info.validatorPrefs && info.validatorPrefs.validatorPayment;
 
-  return <Loading metas={[infoMeta]}>{validatorCommission && <BalanceValue input={validatorCommission} />}</Loading>;
+  return <Loading meta={infoMeta}>{validatorCommission && <BalanceValue input={validatorCommission} />}</Loading>;
 }
 
 function OtherStakesCell({ stashAddress }: ICellProps) {
@@ -51,7 +51,7 @@ function OtherStakesCell({ stashAddress }: ICellProps) {
   const stakers = info && info.stakers;
   const otherStakes = stakers && stakers.total.sub(stakers.own);
 
-  return <Loading metas={[infoMeta]}>{otherStakes && <BalanceValue input={otherStakes} />}</Loading>;
+  return <Loading meta={infoMeta}>{otherStakes && <BalanceValue input={otherStakes} />}</Loading>;
 }
 
 function UserStakeCell({ stashAddress }: ICellProps) {
@@ -72,7 +72,7 @@ function UserStakeCell({ stashAddress }: ICellProps) {
   }, [stakers, accounts]);
 
   return (
-    <Loading metas={[infoMeta, accountsMeta]}>
+    <Loading meta={[infoMeta, accountsMeta]}>
       <BalanceValue input={userStake} />
     </Loading>
   );

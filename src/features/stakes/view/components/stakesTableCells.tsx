@@ -7,10 +7,10 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { useSubscribable } from 'shared/helpers/react';
 
 import BalanceValue from 'components/BalanceValue';
-import { IconButton } from 'shared/view/elements';
+import { IconButton, Loading } from 'shared/view/elements';
 import { OpenInNewOutlined } from 'shared/view/elements/Icons';
-import Loading from 'shared/view/elements/Loading/Loading';
-import { useStyles } from 'features/stakes/view/containers/StakesList/StakesList.style';
+
+import { useStyles } from './stakesTableCells.style';
 
 interface IProps {
   makeLinkToStake(accountAddress: string): string;
@@ -29,7 +29,7 @@ export function NominatorsCountCell({ account }: ICellProps) {
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);
   const nominatorsCount = info && info.nominators ? info.nominators.length : 0;
 
-  return <Loading metas={[infoMeta]}>{nominatorsCount}</Loading>;
+  return <Loading meta={infoMeta}>{nominatorsCount}</Loading>;
 }
 
 export function StakeSizeCell({ account }: ICellProps) {
@@ -38,7 +38,7 @@ export function StakeSizeCell({ account }: ICellProps) {
   const stakeSize = info && info.stakingLedger ? info.stakingLedger.active : new BN(0);
 
   return (
-    <Loading metas={[infoMeta]}>
+    <Loading meta={infoMeta}>
       <BalanceValue input={stakeSize} />
     </Loading>
   );
@@ -53,7 +53,7 @@ export function AwaitingWithdrawalCell({ account }: ICellProps) {
       : new BN(0);
 
   return (
-    <Loading metas={[infoMeta]}>
+    <Loading meta={infoMeta}>
       <BalanceValue input={awaitingWithdrawal} />
     </Loading>
   );
@@ -65,7 +65,7 @@ export function RedeemableCell({ account }: ICellProps) {
   const redeemable = (info && info.redeemable) || new BN(0);
 
   return (
-    <Loading metas={[infoMeta]}>
+    <Loading meta={infoMeta}>
       <BalanceValue input={redeemable} />
     </Loading>
   );
@@ -75,12 +75,8 @@ export function LinkToStakeCell({ account, makeLinkToStake }: ICellProps & IProp
   const classes = useStyles();
 
   return (
-    <Loading metas={[]}>
-      {
-        <IconButton component={Link} to={makeLinkToStake(account.address)} className={classes.iconButton}>
-          <OpenInNewOutlined fontSize="inherit" />
-        </IconButton>
-      }
-    </Loading>
+    <IconButton component={Link} to={makeLinkToStake(account.address)} className={classes.iconButton}>
+      <OpenInNewOutlined fontSize="inherit" />
+    </IconButton>
   );
 }

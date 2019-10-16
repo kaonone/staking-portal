@@ -4,7 +4,7 @@ import { FORM_ERROR } from 'final-form';
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
-import { CircleProgressBar, Typography, Hint } from 'shared/view/elements';
+import { Loading } from 'shared/view/elements';
 import { toBaseUnit, getErrorMsg } from 'shared/helpers';
 import { useSubscribable } from 'shared/helpers/react';
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
@@ -37,31 +37,17 @@ function CashWithdrawalForm(props: IProps) {
     [address, chainProps],
   );
 
-  if (!chainPropsMeta.loaded) {
-    return (
-      <Hint>
-        <CircleProgressBar />
-      </Hint>
-    );
-  }
-
-  if (!!chainPropsMeta.error) {
-    return (
-      <Hint>
-        <Typography color="error">{chainPropsMeta.error}</Typography>
-      </Hint>
-    );
-  }
-
   return (
-    <BalanceChangingForm
-      title={t(tKeys.title.getKey())}
-      placeholder={t(tKeys.field.placeholder.getKey())}
-      cancelButtonText={t(tKeys.cancelButtonText.getKey())}
-      submitButtonText={t(tKeys.submitButtonText.getKey())}
-      onSubmit={onSubmit}
-      onCancel={onCancel}
-    />
+    <Loading meta={chainPropsMeta} variant="hint" progressVariant="circle">
+      <BalanceChangingForm
+        title={t(tKeys.title.getKey())}
+        placeholder={t(tKeys.field.placeholder.getKey())}
+        cancelButtonText={t(tKeys.cancelButtonText.getKey())}
+        submitButtonText={t(tKeys.submitButtonText.getKey())}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    </Loading>
   );
 }
 

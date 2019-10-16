@@ -3,17 +3,11 @@ import { of } from 'rxjs';
 
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
-import {
-  Table as GenericTable,
-  MakeTableType,
-  Typography,
-  CircleProgressBar,
-  Checkbox,
-  Hint,
-} from 'shared/view/elements';
+import { Table as GenericTable, MakeTableType, Typography, Checkbox, Hint, Loading } from 'shared/view/elements';
 import { usePagination } from 'shared/view/hooks';
 import { useSubscribable } from 'shared/helpers/react';
 
+import { MakeValidatorsCheckingHandler } from '../../../types';
 import {
   AddressCell,
   CheckboxCell,
@@ -21,13 +15,10 @@ import {
   OwnStakeCell,
   UserStakeCell,
   ValidatorCommissionCell,
-} from 'features/validators/view/components/validatorsTableCells';
-
+} from '../../components/validatorsTableCells';
 import { useStyles } from './ValidatorsList.style';
 
 const Table = GenericTable as MakeTableType<string>;
-
-export type MakeValidatorsCheckingHandler = (address: string | string[]) => () => void;
 
 interface IProps {
   validatorStashes?: string[];
@@ -45,7 +36,6 @@ function ValidatorsList(props: IProps) {
     [validatorStashes],
     [],
   );
-  const { loaded: validatorsLoaded, error: validatorsLoadingError } = validatorsMeta;
 
   const classes = useStyles();
   const { t } = useTranslate();
@@ -64,76 +54,64 @@ function ValidatorsList(props: IProps) {
     );
   };
 
-  if (!validatorsLoaded) {
-    return (
-      <Hint>
-        <CircleProgressBar />
-      </Hint>
-    );
-  }
-
-  if (!!validatorsLoadingError) {
-    return (
-      <Hint>
-        <Typography color="error">{validatorsLoadingError}</Typography>
-      </Hint>
-    );
-  }
-
-  return !paginatedValidators.length ? (
-    <Hint>
-      <Typography>{t(tKeys.notFound.getKey())}</Typography>
-    </Hint>
-  ) : (
-    <div>
-      <Table data={paginatedValidators} separated>
-        <Table.Column>
-          <Table.Head align={'center'}>#</Table.Head>
-          <Table.Cell align={'center'}>
-            {({ index }) => (
-              <Typography key="1" variant="body1" className={classes.memberNumber}>
-                {index + 1}
-              </Typography>
+  return (
+    <Loading meta={validatorsMeta} variant="hint" progressVariant="circle">
+      {!paginatedValidators.length ? (
+        <Hint>
+          <Typography>{t(tKeys.notFound.getKey())}</Typography>
+        </Hint>
+      ) : (
+        <div>
+          <Table data={paginatedValidators} separated>
+            <Table.Column>
+              <Table.Head align={'center'}>#</Table.Head>
+              <Table.Cell align={'center'}>
+                {({ index }) => (
+                  <Typography key="1" variant="body1" className={classes.memberNumber}>
+                    {index + 1}
+                  </Typography>
+                )}
+              </Table.Cell>
+            </Table.Column>
+            {!!checkedValidators && !!makeValidatorsCheckingHandler && (
+              <Table.Column>
+                <Table.Head align={'center'}>{renderCheckboxHeaderCell()}</Table.Head>
+                <Table.Cell align={'center'}>
+                  {({ data }) => (
+                    <CheckboxCell
+                      stashAddress={data}
+                      checkedValidators={checkedValidators}
+                      makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
+                    />
+                  )}
+                </Table.Cell>
+              </Table.Column>
             )}
-          </Table.Cell>
-        </Table.Column>
-        {!!checkedValidators && !!makeValidatorsCheckingHandler && (
-          <Table.Column>
-            <Table.Head align={'center'}>{renderCheckboxHeaderCell()}</Table.Head>
-            <Table.Cell align={'center'}>
-              {({ data }) => (
-                <CheckboxCell
-                  stashAddress={data}
-                  checkedValidators={checkedValidators}
-                  makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
-                />
-              )}
-            </Table.Cell>
-          </Table.Column>
-        )}
-        <Table.Column>
-          <Table.Head>{t(tKeys.columns.address.getKey())}</Table.Head>
-          <Table.Cell>{({ data }) => <AddressCell stashAddress={data} />}</Table.Cell>
-        </Table.Column>
-        <Table.Column>
-          <Table.Head>{t(tKeys.columns.ownStake.getKey())}</Table.Head>
-          <Table.Cell>{({ data }) => <OwnStakeCell stashAddress={data} />}</Table.Cell>
-        </Table.Column>
-        <Table.Column>
-          <Table.Head>{t(tKeys.columns.commission.getKey())}</Table.Head>
-          <Table.Cell>{({ data }) => <ValidatorCommissionCell stashAddress={data} />}</Table.Cell>
-        </Table.Column>
-        <Table.Column>
-          <Table.Head>{t(tKeys.columns.otherStakes.getKey())}</Table.Head>
-          <Table.Cell>{({ data }) => <OtherStakesCell stashAddress={data} />}</Table.Cell>
-        </Table.Column>
-        <Table.Column>
-          <Table.Head>{t(tKeys.columns.myStake.getKey())}</Table.Head>
-          <Table.Cell>{({ data }) => <UserStakeCell stashAddress={data} />}</Table.Cell>
-        </Table.Column>
-      </Table>
-      <div className={classes.pagination}>{paginationView}</div>
-    </div>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.address.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <AddressCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.ownStake.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <OwnStakeCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.commission.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <ValidatorCommissionCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.otherStakes.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <OtherStakesCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.myStake.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <UserStakeCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+          </Table>
+          <div className={classes.pagination}>{paginationView}</div>
+        </div>
+      )}
+    </Loading>
   );
 }
 
