@@ -1,5 +1,5 @@
 export * from './Input';
-export * from './Table/Table';
+export { default as Table, MakeTableType } from './Table/Table';
 export { default as Checkbox } from './Checkbox/Checkbox';
 export { default as CheckboxInput } from './CheckboxInput/CheckboxInput';
 export { default as CircleProgressBar } from './CircleProgressBar/CircleProgressBar';
@@ -21,6 +21,7 @@ export { default as GlobalLoader } from './GlobalLoader/GlobalLoader';
 export { default as Avatar } from './Avatar/Avatar';
 export { default as Select } from './Select/Select';
 export { default as Hint } from './Hint/Hint';
+export { default as Loading } from './Loading/Loading';
 
 export { default as ExpansionPanelSummary } from '@material-ui/core/ExpansionPanelSummary';
 export { default as MenuItem } from '@material-ui/core/MenuItem';

@@ -1,37 +1,32 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { of } from 'rxjs';
-import { pluck } from 'ramda';
-import BN from 'bn.js';
 
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  Typography,
-  TableBody,
-  CircleProgressBar,
-  LinearProgress,
-  Checkbox,
-  Hint,
-} from 'shared/view/elements';
-import BalanceValue from 'components/BalanceValue';
+import { Table as GenericTable, MakeTableType, Typography, Checkbox, Hint, Loading } from 'shared/view/elements';
 import { usePagination } from 'shared/view/hooks';
 import { useSubscribable } from 'shared/helpers/react';
 
+import { MakeValidatorsCheckingHandler } from '../../../types';
+import {
+  AddressCell,
+  CheckboxCell,
+  OtherStakesCell,
+  OwnStakeCell,
+  UserStakeCell,
+  ValidatorCommissionCell,
+} from '../../components/validatorsTableCells';
 import { useStyles } from './ValidatorsList.style';
 
-const tKeys = tKeysAll.features.validators.list;
-
-type MakeValidatorsCheckingHandler = (address: string | string[]) => () => void;
+const Table = GenericTable as MakeTableType<string>;
 
 interface IProps {
   validatorStashes?: string[];
   checkedValidators?: string[];
   makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
 }
+
+const tKeys = tKeysAll.features.validators.list;
 
 function ValidatorsList(props: IProps) {
   const { validatorStashes, checkedValidators, makeValidatorsCheckingHandler } = props;
@@ -41,7 +36,6 @@ function ValidatorsList(props: IProps) {
     [validatorStashes],
     [],
   );
-  const { loaded: validatorsLoaded, error: validatorsLoadingError } = validatorsMeta;
 
   const classes = useStyles();
   const { t } = useTranslate();
@@ -60,156 +54,64 @@ function ValidatorsList(props: IProps) {
     );
   };
 
-  const headerCells = [
-    '#',
-    ...(checkedValidators ? [renderCheckboxHeaderCell()] : []),
-    t(tKeys.columns.address.getKey()),
-    t(tKeys.columns.ownStake.getKey()),
-    t(tKeys.columns.commission.getKey()),
-    t(tKeys.columns.otherStakes.getKey()),
-    t(tKeys.columns.myStake.getKey()),
-  ];
-
-  const cellsAlign: Array<'left' | 'center' | 'right'> = [
-    'center',
-    ...(checkedValidators ? (['center'] as const) : []),
-    'left',
-    'left',
-    'left',
-    'left',
-    'left',
-  ];
-
-  if (!validatorsLoaded) {
-    return (
-      <Hint>
-        <CircleProgressBar />
-      </Hint>
-    );
-  }
-
-  if (!!validatorsLoadingError) {
-    return (
-      <Hint>
-        <Typography color="error">{validatorsLoadingError}</Typography>
-      </Hint>
-    );
-  }
-
-  return !paginatedValidators.length ? (
-    <Hint>
-      <Typography>{t(tKeys.notFound.getKey())}</Typography>
-    </Hint>
-  ) : (
-    <div>
-      <Table separated>
-        <TableHead>
-          <TableRow>
-            {headerCells.map((title, i) => (
-              <TableCell key={i} align={cellsAlign[i]}>
-                {title}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {paginatedValidators.map((stashAddress, index) => (
-            <ValidatorRow
-              key={stashAddress}
-              index={index}
-              stashAddress={stashAddress}
-              cellsAlign={cellsAlign}
-              checkedValidators={checkedValidators}
-              makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
-            />
-          ))}
-        </TableBody>
-      </Table>
-      <div className={classes.pagination}>{paginationView}</div>
-    </div>
-  );
-}
-
-interface IValidatorRowProps {
-  index: number;
-  stashAddress: string;
-  cellsAlign: Array<'left' | 'center' | 'right'>;
-  checkedValidators?: string[];
-  makeValidatorsCheckingHandler?: MakeValidatorsCheckingHandler;
-}
-
-function ValidatorRow({
-  checkedValidators,
-  makeValidatorsCheckingHandler,
-  stashAddress,
-  index,
-  cellsAlign,
-}: IValidatorRowProps) {
-  const classes = useStyles();
-  const { api } = useDeps();
-
-  const [accounts, accountsMeta] = useSubscribable(() => api.getSubstrateAccounts$(), [], []);
-
-  const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stashAddress), [stashAddress], null);
-
-  const renderInfoCell = (content: React.ReactNode, metas: Array<{ loaded: boolean; error: string | null }>) => {
-    const loaded = metas.every(value => value.loaded);
-    const error = (metas.find(value => value.error) || { error: null }).error;
-
-    return (
-      <>
-        {!loaded && <LinearProgress />}
-        {loaded && (error ? <Typography color="error">{error}</Typography> : content)}
-      </>
-    );
-  };
-
-  const renderCheckboxCell = (
-    validators: string[],
-    currentValidator: string,
-    onChange?: MakeValidatorsCheckingHandler,
-  ) => {
-    const isChecked = validators.includes(currentValidator);
-
-    return <Checkbox checked={isChecked} onChange={onChange ? onChange(currentValidator) : undefined} />;
-  };
-
-  const stakers = info && info.stakers;
-  const ownStake = stakers && stakers.own;
-  const otherStakes = stakers && stakers.total.sub(stakers.own);
-  const validatorCommission = info && info.validatorPrefs && info.validatorPrefs.validatorPayment;
-
-  const userStake = useMemo(() => {
-    if (!stakers) {
-      return new BN(0);
-    }
-    const accountAddresses = pluck('address', accounts);
-    return stakers.others
-      .filter(item => accountAddresses.includes(item.who))
-      .map(item => item.value)
-      .reduce((acc, cur) => acc.add(cur), new BN(0));
-  }, [stakers, accounts]);
-
-  const cells = [
-    <Typography key="1" variant="body1" className={classes.memberNumber}>
-      {index + 1}
-    </Typography>,
-    ...(checkedValidators ? [renderCheckboxCell(checkedValidators, stashAddress, makeValidatorsCheckingHandler)] : []),
-    renderInfoCell(stashAddress, []),
-    renderInfoCell(ownStake && <BalanceValue input={ownStake} />, [infoMeta]),
-    renderInfoCell(validatorCommission && <BalanceValue input={validatorCommission} />, [infoMeta]),
-    renderInfoCell(otherStakes && <BalanceValue input={otherStakes} />, [infoMeta]),
-    renderInfoCell(<BalanceValue input={userStake} />, [infoMeta, accountsMeta]),
-  ];
-
   return (
-    <TableRow>
-      {cells.map((cell, k) => (
-        <TableCell key={k} align={cellsAlign[k]}>
-          {cell}
-        </TableCell>
-      ))}
-    </TableRow>
+    <Loading meta={validatorsMeta} variant="hint" progressVariant="circle">
+      {!paginatedValidators.length ? (
+        <Hint>
+          <Typography>{t(tKeys.notFound.getKey())}</Typography>
+        </Hint>
+      ) : (
+        <div>
+          <Table data={paginatedValidators} separated>
+            <Table.Column>
+              <Table.Head align={'center'}>#</Table.Head>
+              <Table.Cell align={'center'}>
+                {({ index }) => (
+                  <Typography key="1" variant="body1" className={classes.memberNumber}>
+                    {index + 1}
+                  </Typography>
+                )}
+              </Table.Cell>
+            </Table.Column>
+            {!!checkedValidators && !!makeValidatorsCheckingHandler && (
+              <Table.Column>
+                <Table.Head align={'center'}>{renderCheckboxHeaderCell()}</Table.Head>
+                <Table.Cell align={'center'}>
+                  {({ data }) => (
+                    <CheckboxCell
+                      stashAddress={data}
+                      checkedValidators={checkedValidators}
+                      makeValidatorsCheckingHandler={makeValidatorsCheckingHandler}
+                    />
+                  )}
+                </Table.Cell>
+              </Table.Column>
+            )}
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.address.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <AddressCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.ownStake.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <OwnStakeCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.commission.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <ValidatorCommissionCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.otherStakes.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <OtherStakesCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.myStake.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <UserStakeCell stashAddress={data} />}</Table.Cell>
+            </Table.Column>
+          </Table>
+          <div className={classes.pagination}>{paginationView}</div>
+        </div>
+      )}
+    </Loading>
   );
 }
 

@@ -3,9 +3,11 @@ import BN from 'bn.js';
 import { formatBalance } from '@polkadot/util';
 
 import { useTranslate } from 'services/i18n';
-import { Hint, Typography, Table, TableHead, TableRow, TableCell, TableBody } from 'shared/view/elements';
+import { Hint, Typography, Table as GeneralTable, MakeTableType } from 'shared/view/elements';
 import { usePagination } from 'shared/view/hooks';
 import { Theme, colors, makeStyles } from 'shared/styles';
+
+const Table = GeneralTable as MakeTableType<IItem>;
 
 interface IItem {
   value: BN;
@@ -21,10 +23,6 @@ function UnbondingList({ list }: IProps) {
   const { t, tKeys: tKeysAll } = useTranslate();
   const tKeys = tKeysAll.features.stakes.unbondingList;
 
-  const headerCells = ['#', t(tKeys.columns.size.getKey()), t(tKeys.columns.blocksLeft.getKey())];
-
-  const cellsAlign: Array<'left' | 'center' | 'right'> = ['center', 'right', 'right'];
-
   const { items: paginatedList, paginationView } = usePagination(list);
 
   return !paginatedList.length ? (
@@ -33,25 +31,25 @@ function UnbondingList({ list }: IProps) {
     </Hint>
   ) : (
     <div>
-      <Table separated>
-        <TableHead>
-          <TableRow>
-            {headerCells.map((title, i) => (
-              <TableCell key={i} align={cellsAlign[i]}>
-                {title}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {paginatedList.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell align="center" className={classes.memberNumber}>{index + 1}</TableCell>
-              <TableCell align="right">{formatBalance(item.value)}</TableCell>
-              <TableCell align="right">{item.remainingBlocks.toString()}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+      <Table data={paginatedList} separated>
+        <Table.Column>
+          <Table.Head align={'center'}>#</Table.Head>
+          <Table.Cell align={'center'}>
+            {({ index }) => (
+              <Typography variant="body1" className={classes.memberNumber}>
+                {index + 1}
+              </Typography>
+            )}
+          </Table.Cell>
+        </Table.Column>
+        <Table.Column>
+          <Table.Head align={'right'}>{t(tKeys.columns.size.getKey())}</Table.Head>
+          <Table.Cell align={'right'}>{({ data }) => formatBalance(data.value)}</Table.Cell>
+        </Table.Column>
+        <Table.Column>
+          <Table.Head align={'right'}>{t(tKeys.columns.blocksLeft.getKey())}</Table.Head>
+          <Table.Cell align={'right'}>{({ data }) => data.remainingBlocks.toString()}</Table.Cell>
+        </Table.Column>
       </Table>
       <div className={classes.pagination}>{paginationView}</div>
     </div>
