@@ -48,8 +48,8 @@ function StakesList(props: IProps) {
             <Table.Column>
               <Table.Head align={'center'}>#</Table.Head>
               <Table.Cell align={'center'}>
-                {({ index }: { index: number }) => (
-                  <Typography key="1" variant="body1" className={classes.memberNumber}>
+                {({ index }) => (
+                  <Typography variant="body1" className={classes.memberNumber}>
                     {index + 1}
                   </Typography>
                 )}

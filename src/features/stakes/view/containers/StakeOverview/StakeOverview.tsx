@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Grid, Paper } from 'shared/view/elements';
 import Validators from './Validators';
+import UnbondingOverview from './UnbondingOverview/UnbondingOverview';
 
 interface IProps {
   address: string;
@@ -13,9 +14,11 @@ function StakeOverview({ address }: IProps) {
         <Paper>Stake stats</Paper>
       </Grid>
       <Grid item xs={6}>
-        <Paper>Awaiting withdrawal</Paper>
+        <UnbondingOverview stakeAddress={address} />
       </Grid>
-      <Validators stakeAddress={address} />
+      <Grid item xs={12}>
+        <Validators stakeAddress={address} />
+      </Grid>
     </Grid>
   );
 }

@@ -15,6 +15,8 @@ export const fromResponseConverters: FromResponseConverters = {
     const unwrappedLedger = response.unwrapOr(null);
     return unwrappedLedger && convertStakingLedger(unwrappedLedger);
   },
+  'derive.session.info': response => response,
+  'derive.staking.recentlyOffline': response => response,
 };
 
 function convertDerivedStaking(value: DerivedStaking): IDerivedStaking {

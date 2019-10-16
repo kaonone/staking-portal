@@ -50,15 +50,17 @@ function Table<T>(props: ITableProps<T>) {
       })}
     >
       <thead>
-        {columns.map(({ headProps }, index) =>
-          headProps ? (
-            <td key={index} align={headProps.align}>
-              {headProps.children}
-            </td>
-          ) : (
-            <td key={index} />
-          ),
-        )}
+        <tr>
+          {columns.map(({ headProps }, index) =>
+            headProps ? (
+              <td key={index} align={headProps.align}>
+                {headProps.children}
+              </td>
+            ) : (
+              <td key={index} />
+            ),
+          )}
+        </tr>
       </thead>
       <tbody>
         {data.map((dataRow, index) => (

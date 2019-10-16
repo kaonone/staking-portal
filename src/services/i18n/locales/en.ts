@@ -25,7 +25,8 @@ export default {
     cancel: 'Cancel',
     retry: 'Retry',
     noConnection: 'No connection to the Polkadot Network',
-    needUseExtension: 'This browser has no connection to the Polkadot Network. Please use the Chrome/FireFox Polkadot extension.',
+    needUseExtension:
+      'This browser has no connection to the Polkadot Network. Please use the Chrome/FireFox Polkadot extension.',
     makeSureUseExtension: 'Please make sure you are using Polkadot extension',
     somethingWentWrong: 'Oh. Something went wrong.',
     new: 'New',
@@ -62,7 +63,16 @@ export default {
           awaitingWithdrawal: 'Awaiting unbonding',
           redeemable: 'Redeemable',
         },
-        notFound: 'Your Substrate accounts can not be found, please install Polkadot.js browser extension and create an account.',
+        notFound:
+          'Your Substrate accounts can not be found, please install Polkadot.js browser extension and create an account.',
+      },
+      unbondingList: {
+        columns: {
+          size: 'Size',
+          blocksLeft: 'Blocks left',
+        },
+        title: 'Awaiting unbonding',
+        notFound: 'To unbond funds, use the Withdraw button',
       },
     },
     manageStake: {

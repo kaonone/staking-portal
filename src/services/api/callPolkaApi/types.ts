@@ -2,7 +2,7 @@ import BN from 'bn.js';
 import { O } from 'ts-toolbelt';
 import { GenericAccountId, Vec, Option } from '@polkadot/types';
 import { ChainProperties, AccountId, StakingLedger } from '@polkadot/types/interfaces';
-import { DerivedStaking } from '@polkadot/api-derive/types';
+import { DerivedStaking, DerivedSessionInfo, DerivedRecentlyOffline } from '@polkadot/api-derive/types';
 
 // [Endpoint]: [Request, ConvertedRequestForApi, ApiResponse, ConvertedResponse]
 interface ISignatures {
@@ -10,6 +10,8 @@ interface ISignatures {
   'query.session.validators': [null, null, Vec<AccountId>, string[]];
   'query.staking.ledger': [string, GenericAccountId, Option<StakingLedger>, IStakingLedger | null];
   'derive.staking.info': [string, GenericAccountId, DerivedStaking, IDerivedStaking];
+  'derive.staking.recentlyOffline': [null, null, DerivedRecentlyOffline, DerivedRecentlyOffline];
+  'derive.session.info': [null, null, DerivedSessionInfo, DerivedSessionInfo];
 }
 
 export type Endpoint = keyof ISignatures;
