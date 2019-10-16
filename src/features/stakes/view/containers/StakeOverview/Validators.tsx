@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDeps } from 'core';
 
 import { ValidatorsList } from 'features/validators';
-import { Grid, Typography, CircleProgressBar, Hint } from 'shared/view/elements';
+import { Grid, Typography, Hint, Loading } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
 
 interface IProps {
@@ -21,23 +21,9 @@ function Validators(props: IProps) {
       <Typography variant="h4" gutterBottom>
         Nominees
       </Typography>
-      {!infoMeta.loaded && (
-        <Hint>
-          <CircleProgressBar />
-        </Hint>
-      )}
-      {!!infoMeta.error && (
-        <Hint>
-          <Typography color="error">{infoMeta.error}</Typography>
-        </Hint>
-      )}
-      {infoMeta.loaded &&
-        !infoMeta.error &&
-        (!!nominees.length ? (
-          <ValidatorsList validatorStashes={nominees} />
-        ) : (
-          <Hint>Your stake is not nominated</Hint>
-        ))}
+      <Loading meta={infoMeta} variant="hint" progressVariant="circle">
+        {!!nominees.length ? <ValidatorsList validatorStashes={nominees} /> : <Hint>Your stake is not nominated</Hint>}
+      </Loading>
     </Grid>
   );
 }
