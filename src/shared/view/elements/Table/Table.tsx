@@ -1,17 +1,9 @@
 import React from 'react';
-import * as R from 'ramda';
 import cn from 'classnames';
 import { useStyles } from './Table.style';
 import { attachStaticFields } from 'shared/helpers';
 
-interface ISharedProps {
-  className?: string;
-  children?: React.ReactNode;
-  onClick?(): void;
-}
-
 interface IColumnProps {
-  className?: string;
   children?: React.ReactNode;
 }
 
@@ -29,36 +21,27 @@ interface ICellProps<T> {
   children: ({ index, data }: { index: number; data: T }) => React.ReactNode;
 }
 
-interface IPropsByComponent {
-  Head: IHeadProps;
-  Column: IColumnProps;
-  Cell: ICellProps<any>;
-}
-
 interface ITableProps<T> {
+  className?: string;
+  children?: React.ReactNode;
   data: T[];
   separated?: boolean;
   onClick?(): void;
 }
 
-function Table<T>(props: ISharedProps & ITableProps<T>) {
+function Table<T>(props: ITableProps<T>) {
   const classes = useStyles();
   const { children, className, separated, data } = props;
 
-  const getChildren = <C extends keyof IPropsByComponent>(child: React.ReactNode, componentName: C) => {
-    return React.Children.toArray(child).filter(
-      (item): item is React.ReactElement<IPropsByComponent[C], any> =>
-        !!item && React.isValidElement(item) && (item.type as any).displayName === componentName,
-    );
-  };
+  interface IAggregatedColumn {
+    headProps?: IHeadProps;
+    cellProps?: ICellProps<T>;
+  }
 
-  const columns = getChildren(children, 'Column');
-
-  const headCells = columns.map(column => getChildren(column.props.children, 'Head'));
-  const flattenHeadCells = R.flatten<React.ReactElement<IHeadProps>>(headCells);
-
-  const bodyCells = columns.map(column => getChildren(column.props.children, 'Cell'));
-  const flattenBodyCells = R.flatten<React.ReactElement<ICellProps<any>>>(bodyCells);
+  const columns: IAggregatedColumn[] = filterChildrenByName(children, 'Column').map(column => ({
+    headProps: (filterChildrenByName(column.props.children, 'Head')[0] || {}).props,
+    cellProps: (filterChildrenByName(column.props.children, 'Cell')[0] || {}).props,
+  }));
 
   return (
     <table
@@ -67,24 +50,45 @@ function Table<T>(props: ISharedProps & ITableProps<T>) {
       })}
     >
       <thead>
-        {flattenHeadCells.map((headCell, index) => (
-          <td key={index} align={headCell.props.align}>
-            {headCell.props.children}
-          </td>
-        ))}
+        {columns.map(({ headProps }, index) =>
+          headProps ? (
+            <td key={index} align={headProps.align}>
+              {headProps.children}
+            </td>
+          ) : (
+            <td key={index} />
+          ),
+        )}
       </thead>
       <tbody>
         {data.map((dataRow, index) => (
           <tr key={index} className={cn(props.className, { [classes.clickable]: !!props.onClick })}>
-            {flattenBodyCells.map((cell, cellIndex) => (
-              <td key={cellIndex} align={cell.props.align}>
-                {cell.props.children({ index, data: dataRow })}
-              </td>
-            ))}
+            {columns.map(({ cellProps }, cellIndex) =>
+              cellProps ? (
+                <td key={cellIndex} align={cellProps.align}>
+                  {cellProps.children({ index, data: dataRow })}
+                </td>
+              ) : (
+                <td key={cellIndex} />
+              ),
+            )}
           </tr>
         ))}
       </tbody>
     </table>
+  );
+}
+
+interface IPropsByComponent {
+  Head: IHeadProps;
+  Column: IColumnProps;
+  Cell: ICellProps<any>;
+}
+
+function filterChildrenByName<C extends keyof IPropsByComponent>(child: React.ReactNode, componentName: C) {
+  return React.Children.toArray(child).filter(
+    (item): item is React.ReactElement<IPropsByComponent[C], any> =>
+      React.isValidElement(item) && (item.type as any).displayName === componentName,
   );
 }
 
@@ -100,5 +104,11 @@ function Cell<T>(_props: ICellProps<T>) {
   return <noscript />;
 }
 
-export { Table };
+type MakeTableType<T> = React.StatelessComponent<ITableProps<T>> & {
+  Column: React.StatelessComponent<IColumnProps>;
+  Head: React.StatelessComponent<IHeadProps>;
+  Cell: React.StatelessComponent<ICellProps<T>>;
+};
+
+export { Table, MakeTableType };
 export default attachStaticFields(Table, { Column, Head, Cell });

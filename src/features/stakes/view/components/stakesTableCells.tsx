@@ -20,11 +20,11 @@ interface ICellProps {
   account: InjectedAccountWithMeta;
 }
 
-function AddressCell({ account }: ICellProps) {
+export function AddressCell({ account }: ICellProps) {
   return <>{account.meta.name || account.address}</>;
 }
 
-function NominatorsCountCell({ account }: ICellProps) {
+export function NominatorsCountCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);
   const nominatorsCount = info && info.nominators ? info.nominators.length : 0;
@@ -32,26 +32,46 @@ function NominatorsCountCell({ account }: ICellProps) {
   return <Loading metas={[infoMeta]}>{nominatorsCount}</Loading>;
 }
 
-function StakeSizeCell({ account }: ICellProps) {
+export function StakeSizeCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);
   const stakeSize = info && info.stakingLedger ? info.stakingLedger.active : new BN(0);
 
-  return <Loading metas={[infoMeta]}>{<BalanceValue input={stakeSize} />}</Loading>;
+  return (
+    <Loading metas={[infoMeta]}>
+      <BalanceValue input={stakeSize} />
+    </Loading>
+  );
 }
 
-function AwaitingWithdrawalCell({ account }: ICellProps) {
+export function AwaitingWithdrawalCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);
   const awaitingWithdrawal =
-    info && info.stakingLedger
-      ? info.stakingLedger.unlocking.map(item => item.value).reduce((acc, cur) => acc.add(cur), new BN(0))
+    info && info.unlocking
+      ? info.unlocking.map(item => item.value).reduce((acc, cur) => acc.add(cur), new BN(0))
       : new BN(0);
 
-  return <Loading metas={[infoMeta]}>{<BalanceValue input={awaitingWithdrawal} />}</Loading>;
+  return (
+    <Loading metas={[infoMeta]}>
+      <BalanceValue input={awaitingWithdrawal} />
+    </Loading>
+  );
 }
 
-function LinkToStakeCell({ account, makeLinkToStake }: ICellProps & IProps) {
+export function RedeemableCell({ account }: ICellProps) {
+  const { api } = useDeps();
+  const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);
+  const redeemable = (info && info.redeemable) || new BN(0);
+
+  return (
+    <Loading metas={[infoMeta]}>
+      <BalanceValue input={redeemable} />
+    </Loading>
+  );
+}
+
+export function LinkToStakeCell({ account, makeLinkToStake }: ICellProps & IProps) {
   const classes = useStyles();
 
   return (
@@ -64,5 +84,3 @@ function LinkToStakeCell({ account, makeLinkToStake }: ICellProps & IProps) {
     </Loading>
   );
 }
-
-export { AddressCell, NominatorsCountCell, StakeSizeCell, AwaitingWithdrawalCell, LinkToStakeCell };
