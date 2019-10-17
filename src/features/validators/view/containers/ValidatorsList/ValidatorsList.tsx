@@ -55,7 +55,7 @@ function ValidatorsList(props: IProps) {
   };
 
   return (
-    <Loading meta={validatorsMeta} variant="hint" progressVariant="circle">
+    <Loading meta={validatorsMeta} variant="hint">
       {!paginatedValidators.length ? (
         <Hint>
           <Typography>{t(tKeys.notFound.getKey())}</Typography>

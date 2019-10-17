@@ -1,6 +1,7 @@
 import React from 'react';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from 'shared/styles';
 import Hint from '../Hint/Hint';
 import CircleProgressBar from '../CircleProgressBar/CircleProgressBar';
 
@@ -16,7 +17,14 @@ interface IProps {
   progressVariant?: 'linear' | 'circle';
 }
 
+const useStyles = makeStyles({
+  linearProgress: {
+    flexGrow: 1,
+  },
+});
+
 export default function Loading(props: IProps) {
+  const classes = useStyles();
   const { children, variant, progressVariant } = props;
   const metas = Array.isArray(props.meta) ? props.meta : [props.meta];
 
@@ -27,7 +35,11 @@ export default function Loading(props: IProps) {
 
   return (
     <>
-      {!loaded && <Wrapper>{progressVariant === 'circle' ? <CircleProgressBar /> : <LinearProgress />}</Wrapper>}
+      {!loaded && (
+        <Wrapper>
+          {progressVariant === 'circle' ? <CircleProgressBar /> : <LinearProgress className={classes.linearProgress} />}
+        </Wrapper>
+      )}
       {loaded && !!error && (
         <Wrapper>
           <Typography color="error">{error}</Typography>
