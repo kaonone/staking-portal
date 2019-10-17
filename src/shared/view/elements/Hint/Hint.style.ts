@@ -3,12 +3,14 @@ import { Theme, colors, makeStyles } from 'shared/styles';
 export const useStyles = makeStyles((theme: Theme) => {
   return {
     root: {
-      padding: theme.spacing(2),
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: theme.spacing(6),
+      padding: theme.spacing(1.5),
       borderRadius: '0.25rem',
       backgroundColor: colors.whiteLilac,
       textAlign: 'center',
-      display: 'flex',
-      justifyContent: 'center',
     },
   };
 });

@@ -74,6 +74,11 @@ export default {
         title: 'Awaiting unbonding',
         notFound: 'To unbond funds, use the Withdraw button',
       },
+      metrics: {
+        bonded: 'Bonded',
+        unbonding: 'Unbonding',
+        redeemable: 'Redeemable',
+      },
     },
     manageStake: {
       balanceReplenishmentForm: {

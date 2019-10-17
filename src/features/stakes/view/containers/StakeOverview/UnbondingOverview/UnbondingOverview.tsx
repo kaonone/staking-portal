@@ -23,7 +23,7 @@ function UnbondingOverview(props: IProps) {
       <Typography variant="h4" gutterBottom>
         {t(tKeys.features.stakes.unbondingList.title.getKey())}
       </Typography>
-      <Loading meta={stakingInfoMeta} variant="hint" progressVariant="circle">
+      <Loading meta={stakingInfoMeta} variant="hint">
         <UnbondingList list={unbondingList} />
       </Loading>
     </>
