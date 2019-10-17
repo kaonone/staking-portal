@@ -2,20 +2,22 @@ import { withStyles, Theme, WithStyles, colors } from 'shared/styles';
 
 const styles = (theme: Theme) => ({
   root: {
-    padding: `${theme.spacing()}px ${theme.spacing(2.5)}px`,
+    padding: `${theme.spacing(1.25)}px ${theme.spacing(2.5)}px`,
     borderRadius: '0.25rem',
     backgroundColor: colors.white,
   },
 
   toggleIcon: {
-    width: '0.875rem',
-    height: '0.875rem',
+    fontSize: '1rem',
     color: colors.haiti,
-    cursor: 'pointer',
 
     '&$disabled': {
       color: colors.topaz,
     },
+  },
+
+  toggleButton: {
+    margin: -theme.spacing(1),
   },
 
   toggleBack: {

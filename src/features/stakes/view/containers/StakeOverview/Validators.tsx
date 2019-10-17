@@ -21,7 +21,7 @@ function Validators(props: IProps) {
       <Typography variant="h4" gutterBottom>
         Nominees
       </Typography>
-      <Loading meta={infoMeta} variant="hint" progressVariant="circle">
+      <Loading meta={infoMeta} variant="hint">
         {!!nominees.length ? <ValidatorsList validatorStashes={nominees} /> : <Hint>Your stake is not nominated</Hint>}
       </Loading>
     </>

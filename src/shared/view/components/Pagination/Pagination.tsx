@@ -29,22 +29,21 @@ function Pagination(props: IProps & StylesProps) {
   const isDisabledDecrease = from <= 0;
   const isDisabledIncrease = to >= totalItems;
 
-  const handleChangePerPage = React.useCallback((event) => onChangePerPage(event.target.value), [onChangePerPage]);
+  const handleChangePerPage = React.useCallback(event => onChangePerPage(event.target.value), [onChangePerPage]);
 
   return (
     <div className={classes.root}>
-
       <Grid container wrap="nowrap" justify="flex-end" alignItems="center" spacing={5}>
         <Grid item>
           <Typography component="span" className={classes.itemsPerPage} variant="subtitle1">
             {`${t(tKeys.itemsPerPage.getKey())}:`}
           </Typography>
-          <Select
-            value={perPage}
-            onChange={handleChangePerPage}
-            classes={{ select: classes.select }}
-          >
-            {paginationSteps.map(step => (<MenuItem key={step} value={step}>{step}</MenuItem>))}
+          <Select value={perPage} onChange={handleChangePerPage} classes={{ select: classes.select }}>
+            {paginationSteps.map(step => (
+              <MenuItem key={step} value={step}>
+                {step}
+              </MenuItem>
+            ))}
           </Select>
         </Grid>
         <Grid item>
@@ -53,25 +52,29 @@ function Pagination(props: IProps & StylesProps) {
           </Typography>
         </Grid>
         <Grid item>
-          <Grid container wrap="nowrap" justify="space-between">
-            <IconButton
-              className={classes.toggleBack}
-              onClick={onChangePage.bind(null, currentPage - 1)}
-              disabled={isDisabledDecrease}
-            >
-              <AngleArrow className={cn(classes.toggleIcon, { [classes.disabled]: isDisabledDecrease })} />
-            </IconButton>
-            <IconButton
-              onClick={onChangePage.bind(null, currentPage + 1)}
-              disabled={to >= totalItems}
-            >
-              <AngleArrow className={cn(classes.toggleIcon, { [classes.disabled]: isDisabledIncrease })} />
-            </IconButton>
+          <Grid container wrap="nowrap" justify="space-between" spacing={2}>
+            <Grid item>
+              <IconButton
+                className={cn(classes.toggleButton, classes.toggleBack)}
+                onClick={onChangePage.bind(null, currentPage - 1)}
+                disabled={isDisabledDecrease}
+              >
+                <AngleArrow className={cn(classes.toggleIcon, { [classes.disabled]: isDisabledDecrease })} />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                className={classes.toggleButton}
+                onClick={onChangePage.bind(null, currentPage + 1)}
+                disabled={to >= totalItems}
+              >
+                <AngleArrow className={cn(classes.toggleIcon, { [classes.disabled]: isDisabledIncrease })} />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
     </div>
-
   );
 }
 

@@ -37,7 +37,7 @@ function StakesList(props: IProps) {
   const { items: paginatedAccounts, paginationView } = usePagination(accounts || []);
 
   return (
-    <Loading meta={accountsMeta} variant="hint" progressVariant="circle">
+    <Loading meta={accountsMeta} variant="hint">
       {!paginatedAccounts.length ? (
         <Hint>
           <Typography>{t(tKeys.notFound.getKey())}</Typography>

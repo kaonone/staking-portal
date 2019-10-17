@@ -59,7 +59,7 @@ function StakeStats(props: IProps) {
       <Typography variant="h4" gutterBottom>
         Stake condition
       </Typography>
-      <Loading meta={infoMeta} variant="hint" progressVariant="circle">
+      <Loading meta={infoMeta} variant="hint">
         <Table data={metrics} separated>
           <Table.Column>
             <Table.Cell>{({ data }) => data.name}</Table.Cell>
