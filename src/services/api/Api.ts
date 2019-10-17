@@ -50,6 +50,10 @@ export class Api {
     await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.chill');
   }
 
+  public async redeem(fromAddress: string): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.withdrawUnbonded');
+  }
+
   // TODO need to update stream after stopNominating
   @memoize()
   public getValidators$(): Observable<string[]> {

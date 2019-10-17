@@ -1,7 +1,8 @@
 import React from 'react';
 import cn from 'classnames';
-import { useStyles } from './Table.style';
+import getEnvParams from 'core/getEnvParams';
 import { attachStaticFields } from 'shared/helpers';
+import { useStyles } from './Table.style';
 
 interface IColumnProps {
   children?: React.ReactNode;
@@ -38,12 +39,12 @@ function Table<T>(props: ITableProps<T>) {
     cellProps?: ICellProps<T>;
   }
 
-  const columns: IAggregatedColumn[] = filterChildrenByName(children, 'Column').map(column => ({
-    headProps: (filterChildrenByName(column.props.children, 'Head')[0] || {}).props,
-    cellProps: (filterChildrenByName(column.props.children, 'Cell')[0] || {}).props,
+  const columns: IAggregatedColumn[] = filterChildrenByComponent<IColumnProps>(children, Column).map(column => ({
+    headProps: (filterChildrenByComponent(column.props.children, Head)[0] || {}).props,
+    cellProps: (filterChildrenByComponent(column.props.children, Cell)[0] || {}).props,
   }));
 
-  const needToRenderHead = columns.every(column => column.headProps);
+  const needToRenderHead = columns.some(column => column.headProps);
 
   return (
     <table
@@ -85,16 +86,12 @@ function Table<T>(props: ITableProps<T>) {
   );
 }
 
-interface IPropsByComponent {
-  Head: IHeadProps;
-  Column: IColumnProps;
-  Cell: ICellProps<any>;
-}
-
-function filterChildrenByName<C extends keyof IPropsByComponent>(child: React.ReactNode, componentName: C) {
+function filterChildrenByComponent<Props>(child: React.ReactNode, Component: React.ComponentType<Props>) {
+  const { withHot } = getEnvParams();
   return React.Children.toArray(child).filter(
-    (item): item is React.ReactElement<IPropsByComponent[C], any> =>
-      React.isValidElement(item) && (item.type as any).displayName === componentName,
+    (item): item is React.ReactElement<Props, any> =>
+      React.isValidElement(item) &&
+      (withHot ? (item.type as any).displayName === Component.name : item.type === Component),
   );
 }
 
@@ -110,10 +107,10 @@ function Cell<T>(_props: ICellProps<T>) {
   return <noscript />;
 }
 
-type MakeTableType<T> = React.StatelessComponent<ITableProps<T>> & {
-  Column: React.StatelessComponent<IColumnProps>;
-  Head: React.StatelessComponent<IHeadProps>;
-  Cell: React.StatelessComponent<ICellProps<T>>;
+type MakeTableType<T> = React.FunctionComponent<ITableProps<T>> & {
+  Column: React.FunctionComponent<IColumnProps>;
+  Head: React.FunctionComponent<IHeadProps>;
+  Cell: React.FunctionComponent<ICellProps<T>>;
 };
 
 export { Table, MakeTableType };
