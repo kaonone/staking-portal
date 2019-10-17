@@ -1,4 +1,5 @@
 import React from 'react';
+import BN from 'bn.js';
 
 import { useDeps } from 'core';
 import { useTranslate } from 'services/i18n';
@@ -10,6 +11,7 @@ import BalanceReplenishmentForm from '../view/containers/BalanceReplenishmentFor
 import CashWithdrawalForm from '../view/containers/CashWithdrawalForm/CashWithdrawalForm';
 import ValidatorsListEditingForm from '../view/containers/ValidatorsListEditingForm/ValidatorsListEditingForm';
 import NominatingStop from '../view/containers/NominatingStop/NominatingStop';
+import CashRedeeming from '../view/containers/CashRedeeming/CashRedeeming';
 
 export function useStakeActions(address: string) {
   const { api } = useDeps();
@@ -19,8 +21,10 @@ export function useStakeActions(address: string) {
 
   const isEmptyNominees = !info || !info.nominators || !info.nominators.length;
   const nominators = (info && info.nominators) || [];
+  const redeemable = ((info && info.redeemable) || new BN(0)).toString();
 
-  const needToShowNomineesButtons = infoMeta.loaded && !infoMeta.error;
+  const infoLoadedWithoutErrors = infoMeta.loaded && !infoMeta.error;
+
   const changeNomineesButtons = React.useMemo(
     () =>
       isEmptyNominees
@@ -57,6 +61,12 @@ export function useStakeActions(address: string) {
     [isEmptyNominees, address, nominators],
   );
 
+  const redeemButton = (
+    <ModalButton key="Redeem" variant="contained" content={t(tKeys.redeem.getKey())}>
+      {({ closeModal }) => <CashRedeeming onCancel={closeModal} address={address} />}
+    </ModalButton>
+  );
+
   const actions = React.useMemo(
     () =>
       ([
@@ -68,8 +78,10 @@ export function useStakeActions(address: string) {
             {({ closeModal }) => <Form onCancel={closeModal} address={address} />}
           </ModalButton>
         ))
-        .concat(needToShowNomineesButtons ? changeNomineesButtons : [<CircleProgressBar key="Loader" />]),
-    [needToShowNomineesButtons, changeNomineesButtons, address],
+        .concat(infoMeta.loaded ? [] : [<CircleProgressBar key="Loader" />])
+        .concat(infoLoadedWithoutErrors && Number(redeemable) ? redeemButton : [])
+        .concat(infoLoadedWithoutErrors ? changeNomineesButtons : []),
+    [infoLoadedWithoutErrors, changeNomineesButtons, address, redeemable],
   );
 
   return actions;

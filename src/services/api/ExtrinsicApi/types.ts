@@ -45,6 +45,7 @@ interface ISignatures {
   'staking.unbond': [IUnbondRequest, ConvertedUnbondRequest];
   'staking.nominate': [INominateRequest, ConvertedNominateRequest];
   'staking.chill': [null, null];
+  'staking.withdrawUnbonded': [null, null];
 }
 
 export type Endpoint = keyof ISignatures;
