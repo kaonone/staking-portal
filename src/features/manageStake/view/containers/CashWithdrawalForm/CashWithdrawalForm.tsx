@@ -1,11 +1,12 @@
 import React from 'react';
 import { FORM_ERROR } from 'final-form';
+import BN from 'bn.js';
 
 import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
 import { Loading } from 'shared/view/elements';
-import { toBaseUnit, getErrorMsg } from 'shared/helpers';
+import { getErrorMsg } from 'shared/helpers';
 import { useSubscribable } from 'shared/helpers/react';
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
 
@@ -27,7 +28,7 @@ function CashWithdrawalForm(props: IProps) {
       const decimals = chainProps ? chainProps.tokenDecimals : 0;
 
       try {
-        await api.withdrawFromStake(address, toBaseUnit(values.amount, decimals));
+        await api.withdrawFromStake(address, new BN(values.amount, decimals));
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),

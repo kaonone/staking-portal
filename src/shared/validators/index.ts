@@ -8,3 +8,4 @@ export * from './composeValidators';
 export * from './onEnglishPlease';
 export * from './validateFloat';
 export * from './validatePositiveNumber';
+export * from './validateInteger';
