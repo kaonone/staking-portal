@@ -3,6 +3,7 @@ import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
 import { ApiRx } from '@polkadot/api';
+import { DerivedSessionInfo } from '@polkadot/api-derive/types';
 import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
@@ -49,6 +50,10 @@ export class Api {
     await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.chill');
   }
 
+  public async redeem(fromAddress: string): Promise<void> {
+    await this._extrinsicApi.handleExtrinsicSending(fromAddress, 'staking.withdrawUnbonded');
+  }
+
   // TODO need to update stream after stopNominating
   @memoize()
   public getValidators$(): Observable<string[]> {
@@ -80,6 +85,11 @@ export class Api {
   @memoize(identity)
   public getChainProps$(): Observable<IChainProperties> {
     return callPolkaApi(this._substrateApi, 'rpc.system.properties');
+  }
+
+  @memoize()
+  public getSessionInfo$(): Observable<DerivedSessionInfo> {
+    return callPolkaApi(this._substrateApi, 'derive.session.info');
   }
 
   @memoize()

@@ -15,7 +15,7 @@ import {
   NominatorsCountCell,
   StakeSizeCell,
   RedeemableCell,
-} from '../../components/stakesTableCells';
+} from '../../components/stakesTableCells/stakesTableCells';
 import { useStyles } from './StakesList.style';
 
 const Table = GenericTable as MakeTableType<InjectedAccountWithMeta>;
@@ -37,7 +37,7 @@ function StakesList(props: IProps) {
   const { items: paginatedAccounts, paginationView } = usePagination(accounts || []);
 
   return (
-    <Loading meta={accountsMeta} variant="hint" progressVariant="circle">
+    <Loading meta={accountsMeta} variant="hint">
       {!paginatedAccounts.length ? (
         <Hint>
           <Typography>{t(tKeys.notFound.getKey())}</Typography>
@@ -48,8 +48,8 @@ function StakesList(props: IProps) {
             <Table.Column>
               <Table.Head align={'center'}>#</Table.Head>
               <Table.Cell align={'center'}>
-                {({ index }: { index: number }) => (
-                  <Typography key="1" variant="body1" className={classes.memberNumber}>
+                {({ index }) => (
+                  <Typography variant="body1" className={classes.memberNumber}>
                     {index + 1}
                   </Typography>
                 )}
