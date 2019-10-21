@@ -19,6 +19,7 @@ export default {
       notEnoughDai: 'Not enough dai',
       isNumber: 'Enter a valid number',
       decimalsMoreThen: 'Enter a valid number with decimals less than %{decimals} digits',
+      mustBeAnInteger: 'Enter an integer',
       isPositiveNumber: 'Must be positive number',
     },
     pageNotFound: 'We can’t find this page',
