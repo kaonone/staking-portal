@@ -6,6 +6,8 @@ import { Back } from 'shared/view/elements/Icons';
 import { withComponent } from 'shared/helpers/react';
 
 import { provideStyles, StylesProps } from './Header.style';
+import { darkTheme } from 'shared/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 
 const LinkIconButton = withComponent(Link)(IconButton);
 
@@ -26,18 +28,30 @@ class Header extends React.PureComponent<IProps> {
         <Grid container alignItems="center" spacing={2}>
           {backRoutePath && (
             <Grid item>
-              <LinkIconButton to={backRoutePath} className={classes.backButton}><Back /></LinkIconButton>
+              <LinkIconButton to={backRoutePath} className={classes.backButton}>
+                <Back />
+              </LinkIconButton>
             </Grid>
           )}
           <Grid item xs zeroMinWidth>
-            <Typography variant="h5" noWrap weight="bold" className={classes.title}>{title}</Typography>
+            <Typography variant="h5" noWrap weight="bold" className={classes.title}>
+              {title}
+            </Typography>
           </Grid>
-          {actions && !!actions.length && (
+
+          {actions &&
+            !!actions.length &&
             actions.map((action, index) => (
-              <Grid item key={index}>{action}</Grid>
-            ))
+              <Grid item key={index}>
+                <MuiThemeProvider theme={darkTheme}>{action}</MuiThemeProvider>
+              </Grid>
+            ))}
+
+          {!!additionalContent && (
+            <Grid item xs={12}>
+              {additionalContent}
+            </Grid>
           )}
-          {!!additionalContent && <Grid item xs={12}>{additionalContent}</Grid>}
         </Grid>
       </div>
     );
@@ -45,8 +59,4 @@ class Header extends React.PureComponent<IProps> {
 }
 
 export { IProps };
-export default (
-  withRouter(
-    provideStyles(Header),
-  )
-);
+export default withRouter(provideStyles(Header));

@@ -12,6 +12,8 @@ import CashWithdrawalForm from '../view/containers/CashWithdrawalForm/CashWithdr
 import ValidatorsListEditingForm from '../view/containers/ValidatorsListEditingForm/ValidatorsListEditingForm';
 import NominatingStop from '../view/containers/NominatingStop/NominatingStop';
 import CashRedeeming from '../view/containers/CashRedeeming/CashRedeeming';
+import { lightTheme } from 'shared/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 
 export function useStakeActions(address: string) {
   const { api } = useDeps();
@@ -29,13 +31,21 @@ export function useStakeActions(address: string) {
     () =>
       isEmptyNominees
         ? [
-            <ModalButton key="Nominate" dialogMaxWidth="lg" variant="contained" content={t(tKeys.nominate.getKey())}>
+            <ModalButton
+              key="Nominate"
+              dialogMaxWidth="lg"
+              color="primary"
+              variant="contained"
+              content={t(tKeys.nominate.getKey())}
+            >
               {({ closeModal }) => (
-                <ValidatorsListEditingForm
-                  onCancel={closeModal}
-                  address={address}
-                  initialCheckedValidators={nominators}
-                />
+                <MuiThemeProvider theme={lightTheme}>
+                  <ValidatorsListEditingForm
+                    onCancel={closeModal}
+                    address={address}
+                    initialCheckedValidators={nominators}
+                  />
+                </MuiThemeProvider>
               )}
             </ModalButton>,
           ]
@@ -43,27 +53,43 @@ export function useStakeActions(address: string) {
             <ModalButton
               key="Edit nominees"
               dialogMaxWidth="lg"
+              color="primary"
               variant="contained"
               content={t(tKeys.editNominees.getKey())}
             >
               {({ closeModal }) => (
-                <ValidatorsListEditingForm
-                  onCancel={closeModal}
-                  address={address}
-                  initialCheckedValidators={nominators}
-                />
+                <MuiThemeProvider theme={lightTheme}>
+                  <ValidatorsListEditingForm
+                    onCancel={closeModal}
+                    address={address}
+                    initialCheckedValidators={nominators}
+                  />
+                </MuiThemeProvider>
               )}
             </ModalButton>,
-            <ModalButton key="Stop nominating" variant="contained" content={t(tKeys.stopNominating.getKey())}>
-              {({ closeModal }) => <NominatingStop onCancel={closeModal} address={address} />}
+            <ModalButton
+              key="Stop nominating"
+              color="primary"
+              variant="contained"
+              content={t(tKeys.stopNominating.getKey())}
+            >
+              {({ closeModal }) => (
+                <MuiThemeProvider theme={lightTheme}>
+                  <NominatingStop onCancel={closeModal} address={address} />
+                </MuiThemeProvider>
+              )}
             </ModalButton>,
           ],
     [isEmptyNominees, address, nominators],
   );
 
   const redeemButton = (
-    <ModalButton key="Redeem" variant="contained" content={t(tKeys.redeem.getKey())}>
-      {({ closeModal }) => <CashRedeeming onCancel={closeModal} address={address} />}
+    <ModalButton key="Redeem" color="primary" variant="contained" content={t(tKeys.redeem.getKey())}>
+      {({ closeModal }) => (
+        <MuiThemeProvider theme={lightTheme}>
+          <CashRedeeming onCancel={closeModal} address={address} />
+        </MuiThemeProvider>
+      )}
     </ModalButton>
   );
 
@@ -74,8 +100,12 @@ export function useStakeActions(address: string) {
         [CashWithdrawalForm, t(tKeys.withdraw.getKey())],
       ] as const)
         .map(([Form, buttonText]) => (
-          <ModalButton key={buttonText} variant="contained" content={buttonText}>
-            {({ closeModal }) => <Form onCancel={closeModal} address={address} />}
+          <ModalButton color="primary" key={buttonText} variant="contained" content={buttonText}>
+            {({ closeModal }) => (
+              <MuiThemeProvider theme={lightTheme}>
+                <Form onCancel={closeModal} address={address} />
+              </MuiThemeProvider>
+            )}
           </ModalButton>
         ))
         .concat(infoMeta.loaded ? [] : [<CircleProgressBar key="Loader" />])

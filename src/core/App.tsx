@@ -8,7 +8,7 @@ import 'normalize.css';
 
 import { I18nProvider } from 'services/i18n';
 import { IAppData, IModule, IDependencies } from 'shared/types/app';
-import { BaseStyles, theme } from 'shared/styles';
+import { BaseStyles, lightTheme } from 'shared/styles';
 
 import createRoutes from './routes';
 import { DepsContext } from './DepsReactContext';
@@ -25,7 +25,7 @@ export function App({ modules, store, deps }: IAppData & IAppProps) {
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <DepsContext.Provider value={deps}>
             <I18nProvider>
-              <MuiThemeProvider theme={theme}>
+              <MuiThemeProvider theme={lightTheme}>
                 <BaseStyles />
                 {createRoutes(modules)}
               </MuiThemeProvider>

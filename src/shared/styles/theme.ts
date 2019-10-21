@@ -59,29 +59,8 @@ export const gradients = {
 };
 
 export { Theme };
-export const theme: Theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: colors.purpleHeart,
-      light: colors.heliotrope,
-      dark: colors.royalPurple,
-      contrastText: colors.white,
-    },
-    secondary: {
-      main: colors.white,
-      light: colors.white,
-      dark: colors.white,
-      contrastText: colors.royalPurple,
-    },
-    error: {
-      main: colors.geraldine,
-    },
-    text: {
-      primary: colors.haiti,
-      disabled: colors.frenchGray,
-      hint: colors.heliotrope,
-    },
-  },
+
+const commonThemeSettings: Theme = createMuiTheme({
   typography: {
     fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','),
   },
@@ -139,6 +118,58 @@ export const theme: Theme = createMuiTheme({
         backgroundColor: colors.whiteLilac,
         color: colors.royalPurple,
       },
+    },
+  },
+});
+
+export const lightTheme: Theme = createMuiTheme({
+  ...commonThemeSettings,
+  palette: {
+    primary: {
+      main: colors.purpleHeart,
+      light: colors.heliotrope,
+      dark: colors.royalPurple,
+      contrastText: colors.white,
+    },
+    secondary: {
+      main: colors.white,
+      light: colors.white,
+      dark: colors.white,
+      contrastText: colors.royalPurple,
+    },
+    error: {
+      main: colors.geraldine,
+    },
+    text: {
+      primary: colors.haiti,
+      disabled: colors.frenchGray,
+      hint: colors.heliotrope,
+    },
+  },
+});
+
+export const darkTheme: Theme = createMuiTheme({
+  ...commonThemeSettings,
+  palette: {
+    primary: {
+      main: colors.white,
+      light: colors.heliotrope,
+      dark: colors.whiteLilac,
+      contrastText: colors.royalPurple,
+    },
+    secondary: {
+      main: colors.white,
+      light: colors.white,
+      dark: colors.white,
+      contrastText: colors.royalPurple,
+    },
+    error: {
+      main: colors.geraldine,
+    },
+    text: {
+      primary: colors.purpleHeart,
+      disabled: colors.heliotrope,
+      hint: colors.royalPurple,
     },
   },
 });
