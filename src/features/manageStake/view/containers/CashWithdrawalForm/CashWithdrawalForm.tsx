@@ -28,13 +28,14 @@ function CashWithdrawalForm(props: IProps) {
 
       try {
         await api.withdrawFromStake(address, toBaseUnit(values.amount, decimals));
+        onCancel();
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),
         };
       }
     },
-    [address, chainProps],
+    [address, chainProps, onCancel],
   );
 
   return (
