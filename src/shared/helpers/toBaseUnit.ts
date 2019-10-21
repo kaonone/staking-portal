@@ -29,7 +29,7 @@ export function toBaseUnit(input: string, decimals: number): BN {
     whole = '0';
   }
   if (!fraction) {
-    fraction = '0';
+    fraction = '';
   }
   if (fraction.length > decimals) {
     throw new Error(`While converting number "${input}" to base units, too many decimal places`);

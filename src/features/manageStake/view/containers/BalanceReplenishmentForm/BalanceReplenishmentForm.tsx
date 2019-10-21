@@ -22,27 +22,24 @@ function BalanceReplenishmentForm(props: IProps) {
 
   const { api } = useDeps();
   const [isExistsStake, isExistsStakeMeta] = useSubscribable(() => api.checkStakeExisting$(address), [address]);
-  const [chainProps, chainPropsMeta] = useSubscribable(() => api.getChainProps$(), []);
 
   const onSubmit = React.useCallback(
     async (values: IFormData) => {
-      const decimals = chainProps ? chainProps.tokenDecimals : 0;
-
       try {
         isExistsStake
-          ? await api.depositToStake(address, new BN(values.amount, decimals))
-          : await api.createStake(address, new BN(values.amount, decimals));
+          ? await api.depositToStake(address, new BN(values.amount))
+          : await api.createStake(address, new BN(values.amount));
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),
         };
       }
     },
-    [isExistsStake, address, chainProps],
+    [isExistsStake, address],
   );
 
   return (
-    <Loading meta={[isExistsStakeMeta, chainPropsMeta]} variant="hint" progressVariant="circle">
+    <Loading meta={[isExistsStakeMeta]} variant="hint" progressVariant="circle">
       <BalanceChangingForm
         title={t(tKeys.title.getKey())}
         placeholder={t(tKeys.field.placeholder.getKey())}

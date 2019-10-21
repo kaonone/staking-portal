@@ -6,6 +6,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 
 import TextInput from 'shared/view/elements/Input/TextInput';
+import { fromBaseUnit } from 'shared/helpers';
+import { useOnChangeState } from 'shared/helpers/react';
 import { calculateNumberFromDecimals } from 'shared/helpers/calculateNumberFromDecimals';
 
 interface IOwnProps {
@@ -25,57 +27,45 @@ type IProps = IOwnProps & Omit<GetProps<typeof TextInput>, 'ref'>;
 function DecimalsInput(props: IProps) {
   const { placeholder, onChange, baseDecimals, value, ...restInputProps } = props;
 
-  const getInitialValues = (initialAmount: string): { prefix: number; roundedValue: string } => {
-    const zeros = [];
-    const amountString = initialAmount;
+  const [siPrefix, setSiPrefix] = React.useState(getInitialPrefix(value, baseDecimals));
+  const amount = React.useMemo(() => value && fromBaseUnit(value, siPrefix + baseDecimals), [
+    value,
+    siPrefix,
+    baseDecimals,
+  ]);
 
-    amountString
-      .split('')
-      .reverse()
-      .every(num => {
-        if (num === '0') {
-          zeros.push(num);
-          return true;
-        }
-      });
+  useOnChangeState(
+    baseDecimals,
+    (prev, next) => prev !== next,
+    (_prev, nextBaseDecimals) => setSiPrefix(getInitialPrefix(value, nextBaseDecimals)),
+  );
 
-    const prefix = zeros.length ? zeros.length - (zeros.length % 3) : 0;
-    const roundedValue = initialAmount.substr(0, initialAmount.length - prefix);
+  const handleSelectChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSiPrefix(Number(event.target.value));
+      onChange(calculateNumberFromDecimals(amount, Number(event.target.value), baseDecimals));
+    },
+    [amount, baseDecimals],
+  );
 
-    return {
-      prefix,
-      roundedValue,
-    };
-  };
+  const handleInputChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (/^\d*?$/.test(event.target.value)) {
+        onChange(event.target.value && calculateNumberFromDecimals(event.target.value, siPrefix, baseDecimals));
+      }
+    },
+    [siPrefix, baseDecimals],
+  );
 
-  const [decimals, setDecimals] = React.useState(getInitialValues(value).prefix);
-  const [amount, setAmount] = React.useState(getInitialValues(value).roundedValue);
-
-  const handleSelectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDecimals(Number(event.target.value));
-    onChange(calculateNumberFromDecimals(amount, Number(event.target.value), baseDecimals));
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const isValidValue =
-      !Number.isNaN(Number(event.target.value)) &&
-      Number.isInteger(Number(event.target.value)) &&
-      Number(event.target.value) >= 0;
-
-    if (isValidValue) {
-      setAmount(event.target.value);
-      onChange(calculateNumberFromDecimals(event.target.value, decimals, baseDecimals));
-    } else {
-      setAmount(amount);
-      onChange(calculateNumberFromDecimals(amount, decimals, baseDecimals));
-    }
-  };
-
-  const options = formatBalance.getOptions().map(
-    ({ power, text }): IOption<number> => ({
-      value: power,
-      text,
-    }),
+  const options = React.useMemo(
+    () =>
+      formatBalance.getOptions().map(
+        ({ power, text }): IOption<number> => ({
+          value: power,
+          text,
+        }),
+      ),
+    [baseDecimals],
   );
 
   return (
@@ -92,13 +82,7 @@ function DecimalsInput(props: IProps) {
           />
         </Grid>
         <Grid item xs={3}>
-          <TextField
-            select
-            value={decimals}
-            onChange={handleSelectChange}
-            variant="outlined"
-            fullWidth
-          >
+          <TextField select value={siPrefix} onChange={handleSelectChange} variant="outlined" fullWidth>
             {options.map(option => (
               <MenuItem key={option.value} value={option.value}>
                 {option.text}
@@ -109,6 +93,16 @@ function DecimalsInput(props: IProps) {
       </Grid>
     </>
   );
+}
+
+function getInitialPrefix(amount: string, baseDecimals: number): number {
+  const remainder = baseDecimals % 3;
+
+  const [, zeros] = amount.match(new RegExp(`^.+?((000)+?(${'0'.repeat(remainder)}))$`)) || ([] as undefined[]);
+
+  const prefix = zeros ? zeros.length - baseDecimals : 0;
+
+  return prefix;
 }
 
 export default DecimalsInput;
