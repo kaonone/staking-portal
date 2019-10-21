@@ -2,9 +2,9 @@ import React from 'react';
 import { Form } from 'react-final-form';
 
 import { useDeps } from 'core';
-import { TextInputField } from 'shared/view/form';
 import { Button, Typography, Grid, CircleProgressBar, Hint } from 'shared/view/elements';
-import { composeValidators, validateFloat, validatePositiveNumber } from 'shared/validators';
+import { DecimalsField } from 'shared/view/form';
+import { composeValidators, validatePositiveNumber, validateInteger } from 'shared/validators';
 import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './BalanceChangingForm.style';
@@ -40,10 +40,10 @@ function BalanceChangingForm(props: IProps) {
     [],
   );
 
-  const amountDecimals = chainProps ? chainProps.tokenDecimals : 0;
+  const baseDecimals = chainProps ? chainProps.tokenDecimals : 0;
   const validateAmount = React.useMemo(() => {
-    return composeValidators(validateFloat(amountDecimals), validatePositiveNumber);
-  }, [amountDecimals]);
+    return composeValidators(validateInteger, validatePositiveNumber);
+  }, []);
 
   if (!chainPropsMeta.loaded) {
     return (
@@ -70,12 +70,11 @@ function BalanceChangingForm(props: IProps) {
               <Typography variant="h5" weight="bold" noWrap gutterBottom className={classes.title}>
                 {title}
               </Typography>
-              <TextInputField
-                variant="outlined"
+              <DecimalsField
                 validate={validateAmount}
+                baseDecimals={baseDecimals}
                 name={fieldNames.amount}
                 placeholder={placeholder}
-                fullWidth
               />
             </Grid>
             {!!submitError && (

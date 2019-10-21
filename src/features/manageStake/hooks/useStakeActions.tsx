@@ -29,7 +29,13 @@ export function useStakeActions(address: string) {
     () =>
       isEmptyNominees
         ? [
-            <ModalButton key="Nominate" dialogMaxWidth="lg" variant="contained" content={t(tKeys.nominate.getKey())}>
+            <ModalButton
+              key="Nominate"
+              dialogMaxWidth="lg"
+              color="secondary"
+              variant="contained"
+              content={t(tKeys.nominate.getKey())}
+            >
               {({ closeModal }) => (
                 <ValidatorsListEditingForm
                   onCancel={closeModal}
@@ -43,6 +49,7 @@ export function useStakeActions(address: string) {
             <ModalButton
               key="Edit nominees"
               dialogMaxWidth="lg"
+              color="secondary"
               variant="contained"
               content={t(tKeys.editNominees.getKey())}
             >
@@ -54,7 +61,12 @@ export function useStakeActions(address: string) {
                 />
               )}
             </ModalButton>,
-            <ModalButton key="Stop nominating" variant="contained" content={t(tKeys.stopNominating.getKey())}>
+            <ModalButton
+              key="Stop nominating"
+              color="secondary"
+              variant="contained"
+              content={t(tKeys.stopNominating.getKey())}
+            >
               {({ closeModal }) => <NominatingStop onCancel={closeModal} address={address} />}
             </ModalButton>,
           ],
@@ -62,7 +74,7 @@ export function useStakeActions(address: string) {
   );
 
   const redeemButton = (
-    <ModalButton key="Redeem" variant="contained" content={t(tKeys.redeem.getKey())}>
+    <ModalButton key="Redeem" color="secondary" variant="contained" content={t(tKeys.redeem.getKey())}>
       {({ closeModal }) => <CashRedeeming onCancel={closeModal} address={address} />}
     </ModalButton>
   );
@@ -74,7 +86,7 @@ export function useStakeActions(address: string) {
         [CashWithdrawalForm, t(tKeys.withdraw.getKey())],
       ] as const)
         .map(([Form, buttonText]) => (
-          <ModalButton key={buttonText} variant="contained" content={buttonText}>
+          <ModalButton key={buttonText} color="secondary" variant="contained" content={buttonText}>
             {({ closeModal }) => <Form onCancel={closeModal} address={address} />}
           </ModalButton>
         ))
