@@ -24,13 +24,15 @@ function ValidatorsListEditing(props: IProps) {
         values.checkedValidators.length
           ? await api.editNominees(address, values.checkedValidators)
           : await api.stopNominating(address);
+
+        onCancel();
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),
         };
       }
     },
-    [address],
+    [address, onCancel],
   );
 
   return (

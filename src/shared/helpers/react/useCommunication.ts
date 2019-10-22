@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef } from 'react';
+import { useCallback, useState, useRef, useEffect } from 'react';
 import { Object } from 'ts-toolbelt';
 import { makeCancelablePromise, ICancelablePromise } from '../makeCancelablePromise';
 
@@ -22,7 +22,9 @@ interface IOptions<E> {
 }
 
 export default function useCommunication<E extends (...args: any[]) => Promise<any>, O extends IOptions<E> = {}>(
-  effect: E, inputs: any[], options?: O,
+  effect: E,
+  inputs: any[],
+  options?: O,
 ): ICommunicationState<E, O> {
   const defaultResult = options && options.defaultResult;
   const [error, setError] = useState('');
@@ -36,6 +38,8 @@ export default function useCommunication<E extends (...args: any[]) => Promise<a
     setStatusCanceled && setStatus('canceled');
   }, []);
 
+  useEffect(() => () => cancelRequest(false), []);
+
   const resetState = useCallback(() => {
     setStatus('initial');
     setError('');
@@ -43,25 +47,30 @@ export default function useCommunication<E extends (...args: any[]) => Promise<a
     launchedCommunicationRef.current = null;
   }, []);
 
-  const execute = useCallback((...args: InferArgs<E>) => {
-    cancelRequest(false);
-    options && options.resetStateOnExecute && resetState();
-    setStatus('pending');
+  const execute = useCallback(
+    (...args: InferArgs<E>) => {
+      cancelRequest(false);
+      options && options.resetStateOnExecute && resetState();
+      setStatus('pending');
 
-    const communication = makeCancelablePromise<InferResult<E>>(effect(...args));
-    launchedCommunicationRef.current = communication;
+      const communication = makeCancelablePromise<InferResult<E>>(effect(...args));
+      launchedCommunicationRef.current = communication;
 
-    communication.promise
-      .then(res => {
-        setResult(res);
-        setStatus('success');
-      })
-      .catch(err => {
-        if (err.isCanceled) { return; }
-        setError(err.message);
-        setStatus('error');
-      });
-  }, [inputs]);
+      communication.promise
+        .then(res => {
+          setResult(res);
+          setStatus('success');
+        })
+        .catch(err => {
+          if (err.isCanceled) {
+            return;
+          }
+          setError(err.message);
+          setStatus('error');
+        });
+    },
+    [inputs],
+  );
 
   return {
     execute,

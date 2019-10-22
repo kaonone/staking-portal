@@ -29,13 +29,15 @@ function BalanceReplenishmentForm(props: IProps) {
         isExistsStake
           ? await api.depositToStake(address, new BN(values.amount))
           : await api.createStake(address, new BN(values.amount));
+
+        onCancel();
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),
         };
       }
     },
-    [isExistsStake, address],
+    [isExistsStake, address, onCancel],
   );
 
   return (

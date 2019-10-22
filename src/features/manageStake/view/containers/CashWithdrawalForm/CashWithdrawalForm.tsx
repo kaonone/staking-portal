@@ -24,13 +24,15 @@ function CashWithdrawalForm(props: IProps) {
     async (values: IFormData) => {
       try {
         await api.withdrawFromStake(address, new BN(values.amount));
+
+        onCancel();
       } catch (error) {
         return {
           [FORM_ERROR]: getErrorMsg(error),
         };
       }
     },
-    [address],
+    [address, onCancel],
   );
 
   return (
