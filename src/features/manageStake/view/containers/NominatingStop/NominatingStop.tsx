@@ -28,12 +28,8 @@ function NominatingStop(props: IProps) {
 
   useOnChangeState(
     status,
-    (prevStatus: string, currentStatus: string): boolean => {
-      return prevStatus === 'pending' && currentStatus === 'success';
-    },
-    () => {
-      onCancel();
-    },
+    (prevStatus: string, currentStatus: string): boolean => prevStatus === 'pending' && currentStatus === 'success',
+    () => onCancel(),
   );
 
   return (

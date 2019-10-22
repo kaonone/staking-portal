@@ -25,18 +25,14 @@ function CashRedeeming(props: IProps) {
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(address), [address], null);
   const redeemable = (info && info.redeemable) || new BN(0);
 
-  const { execute: executeCashRedeeming, error, status } = useCommunication(() => api.redeem(address), []);
+  const { execute: executeCashRedeeming, error, status } = useCommunication(() => api.redeem(address), [address]);
 
   const submitting = status === 'pending';
 
   useOnChangeState(
     status,
-    (prevStatus: string, currentStatus: string): boolean => {
-      return prevStatus === 'pending' && currentStatus === 'success';
-    },
-    () => {
-      onCancel();
-    },
+    (prevStatus: string, currentStatus: string): boolean => prevStatus === 'pending' && currentStatus === 'success',
+    () => onCancel(),
   );
 
   return (
