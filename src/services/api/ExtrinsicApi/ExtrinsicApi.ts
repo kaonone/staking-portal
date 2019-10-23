@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { ApiRx } from '@polkadot/api';
 import { SubmittableExtrinsic, SubmittableResultImpl } from '@polkadot/api/types';
 import { web3FromAddress } from '@polkadot/extension-dapp';
@@ -14,11 +14,11 @@ import {
 } from './types';
 
 export class ExtrinsicApi {
-  private _extrinsic = new BehaviorSubject<ISubmittedExtrinsic | null>(null);
+  private _extrinsic = new ReplaySubject<ISubmittedExtrinsic>();
 
   constructor(private _substrateApi: Observable<ApiRx>) {}
 
-  public getExtrinsic$(): Observable<ISubmittedExtrinsic | null> {
+  public getExtrinsic$(): Observable<ISubmittedExtrinsic> {
     return this._extrinsic;
   }
 
@@ -42,8 +42,9 @@ export class ExtrinsicApi {
       result.subscribe({
         complete: resolve,
         error: reject,
-        next: ({ isCompleted, isError }) => {
-          isError && reject(`tx.${endpoint} extrinsic is failed`);
+        next: ({ isCompleted, isError, events }) => {
+          const failedEvent = events.find(event => event.event.meta.name.toString() === 'ExtrinsicFailed');
+          (isError || failedEvent) && reject(`tx.${endpoint} extrinsic is failed`);
           isCompleted && resolve();
         },
       });

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, WithSnackbarProps } from 'notistack';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -12,13 +12,13 @@ interface IProps {
 function Snackbar(props: IProps) {
   const { children } = props;
   const classes = useStyles();
-  const notistackRef: React.RefObject<any> = React.createRef();
+  const notistackRef: React.RefObject<WithSnackbarProps> = React.createRef();
 
   const handleButtonClick = React.useCallback(
     (key?: string | number) => () => {
-      notistackRef.current.closeSnackbar(key);
+      notistackRef.current && notistackRef.current.closeSnackbar(key);
     },
-    [notistackRef],
+    [notistackRef.current],
   );
 
   const renderButton = React.useMemo(

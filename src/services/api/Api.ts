@@ -16,7 +16,7 @@ export class Api {
   private _extrinsicApi = new ExtrinsicApi(this._substrateApi);
   constructor(private _substrateApi: Observable<ApiRx>) {}
 
-  public getExtrinsic$(): Observable<ISubmittedExtrinsic | null> {
+  public getExtrinsic$(): Observable<ISubmittedExtrinsic> {
     return this._extrinsicApi.getExtrinsic$();
   }
 

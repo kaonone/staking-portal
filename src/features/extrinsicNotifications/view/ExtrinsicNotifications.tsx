@@ -9,27 +9,31 @@ function ExtrinsicNotifications() {
   const tKeys = tKeysAll.features.notifications;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { api } = useDeps();
-  const [transaction] = useSubscribable(() => api.getExtrinsic$(), []);
+  const [extrinsic] = useSubscribable(() => api.getExtrinsic$(), []);
+
+  const showNotifications = React.useCallback(
+    async (submittedExtrinsic: NonNullable<typeof extrinsic>) => {
+      const method = submittedExtrinsic.extrinsic.method;
+      const pendingNotificationKey = enqueueSnackbar(t(tKeys[method].pending.getKey()), {
+        persist: true,
+        variant: 'info',
+      });
+
+      try {
+        await submittedExtrinsic.promise;
+        enqueueSnackbar(t(tKeys[method].success.getKey()), { variant: 'success' });
+      } catch {
+        enqueueSnackbar(t(tKeys[method].error.getKey()), { variant: 'error' });
+      } finally {
+        pendingNotificationKey && closeSnackbar(pendingNotificationKey);
+      }
+    },
+    [enqueueSnackbar, closeSnackbar],
+  );
 
   React.useEffect(() => {
-    if (transaction) {
-      const showNotification = async () => {
-        const method = transaction.extrinsic.method;
-        const currentSnackbar = enqueueSnackbar(t(tKeys[method].pending.getKey()), { persist: true, variant: 'info' });
-
-        try {
-          await transaction.promise;
-          enqueueSnackbar(t(tKeys[method].success.getKey()), { variant: 'success' });
-        } catch {
-          enqueueSnackbar(t(tKeys[method].error.getKey()), { variant: 'error' });
-        } finally {
-          currentSnackbar && closeSnackbar(currentSnackbar);
-        }
-      };
-
-      showNotification();
-    }
-  }, [transaction]);
+    extrinsic && showNotifications(extrinsic);
+  }, [extrinsic]);
 
   return <></>;
 }
