@@ -124,6 +124,38 @@ export default {
         submitButtonText: 'Redeem cash',
       },
     },
+    notifications: {
+      'staking.bond': {
+        pending: 'pending bond',
+        success: 'success bond',
+        error: 'error bond',
+      },
+      'staking.bondExtra': {
+        pending: 'pending bondExtra',
+        success: 'success bondExtra',
+        error: 'error bondExtra',
+      },
+      'staking.unbond': {
+        pending: 'pending unbond',
+        success: 'success unbond',
+        error: 'error unbond',
+      },
+      'staking.nominate': {
+        pending: 'pending nominate',
+        success: 'success nominate',
+        error: 'error nominate',
+      },
+      'staking.chill': {
+        pending: 'pending chill',
+        success: 'success chill',
+        error: 'error chill',
+      },
+      'staking.withdrawUnbonded': {
+        pending: 'pending withdrawUnbonded',
+        success: 'success withdrawUnbonded',
+        error: 'error withdrawUnbonded',
+      },
+    },
   },
   modules: {},
   services: {},

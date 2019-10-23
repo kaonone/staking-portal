@@ -16,8 +16,8 @@ export class Api {
   private _extrinsicApi = new ExtrinsicApi(this._substrateApi);
   constructor(private _substrateApi: Observable<ApiRx>) {}
 
-  public getExtrinsicsQueue$(): Observable<ISubmittedExtrinsic[]> {
-    return this._extrinsicApi.getExtrinsicsQueue$();
+  public getExtrinsic$(): Observable<ISubmittedExtrinsic | null> {
+    return this._extrinsicApi.getExtrinsic$();
   }
 
   public async createStake(fromAddress: string, value: BN): Promise<void> {
