@@ -1,18 +1,19 @@
 import * as React from 'react';
 import BN from 'bn.js';
-import { tKeys, useTranslate } from 'services/i18n';
+import { formatNumber } from '@polkadot/util';
 import BaseIdentityIcon from '@polkadot/react-identicon';
-import Tooltip from '@material-ui/core/Tooltip';
+import { RecentlyOffline } from '@polkadot/api-derive/types';
+import { tKeys, useTranslate } from 'services/i18n';
 
-import { withStyles } from 'shared/styles';
-import { Avatar, Badge, Grid } from 'shared/view/elements';
+import { withStyles, colors } from 'shared/styles';
+import { Avatar, Badge, Grid, Tooltip } from 'shared/view/elements';
 
 import { useStyles } from './Address.style';
 
 interface IProps {
   address: string;
   offlineCount?: BN;
-  blockNumbers?: string;
+  offlineInfo?: RecentlyOffline[];
 }
 
 const StyledBadge = withStyles(_theme => ({
@@ -22,13 +23,24 @@ const StyledBadge = withStyles(_theme => ({
     justifyContent: 'stretch',
     padding: 0,
     cursor: 'pointer',
+    backgroundColor: colors.valencia,
+    color: '#fff',
   },
 }))(Badge);
 
 function Address(props: IProps) {
-  const { address, offlineCount, blockNumbers } = props;
+  const { address, offlineCount, offlineInfo } = props;
   const classes = useStyles();
   const { t } = useTranslate();
+
+  const formattedBlockNumbers = React.useMemo(
+    () =>
+      offlineInfo && offlineInfo.map(({ blockNumber }): string => `#${formatNumber(blockNumber)}`),
+    [offlineInfo],
+  );
+
+  const blockNumbers = formattedBlockNumbers && formattedBlockNumbers[formattedBlockNumbers.length - 1];
+
   const tooltipTitle = t(tKeys.features.validators.addressInfo.offline.getKey(), { offlineCount, blockNumbers });
 
   return (
@@ -41,7 +53,6 @@ function Address(props: IProps) {
                 <span className={classes.badgeContent}>{`${offlineCount}`}</span>
               </Tooltip>
             }
-            color="primary"
           >
             <Avatar>
               <BaseIdentityIcon className={classes.icon} value={address} />

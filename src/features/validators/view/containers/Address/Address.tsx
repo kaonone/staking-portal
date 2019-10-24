@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useDeps } from 'core';
 import BN from 'bn.js';
-import { formatNumber } from '@polkadot/util';
 
 import { useSubscribable } from 'shared/helpers/react';
 
@@ -22,15 +21,7 @@ function Address(props: IProps) {
     [validatorOfflineInfo],
   );
 
-  const formattedBlockNumbers = React.useMemo(
-    () =>
-      validatorOfflineInfo && validatorOfflineInfo.map(({ blockNumber }): string => `#${formatNumber(blockNumber)}`),
-    [validatorOfflineInfo],
-  );
-
-  const blockNumbers = formattedBlockNumbers && formattedBlockNumbers[formattedBlockNumbers.length - 1];
-
-  return <AddressCard address={address} offlineCount={offlineCount} blockNumbers={blockNumbers} />;
+  return <AddressCard address={address} offlineCount={offlineCount} offlineInfo={validatorOfflineInfo} />;
 }
 
 export default Address;
