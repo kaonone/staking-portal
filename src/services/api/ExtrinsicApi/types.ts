@@ -71,5 +71,6 @@ export type Extrinsic<T extends Endpoint = Endpoint> = T extends Endpoint ? Gene
 
 export interface ISubmittedExtrinsic {
   extrinsic: Extrinsic;
+  promise: Promise<void>;
   result: Observable<SubmittableResultImpl>;
 }

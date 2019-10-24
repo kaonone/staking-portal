@@ -262,6 +262,7 @@
     "node-polyglot": "^2.3.0",
     "node-sass": "^4.11.0",
     "normalize.css": "^8.0.0",
+    "notistack": "^0.9.5",
     "path-to-regexp": "^3.0.0",
     "postcss-loader": "^3.0.0",
     "postcss-reporter": "^6.0.0",

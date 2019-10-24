@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { ApiRx } from '@polkadot/api';
 import { SubmittableExtrinsic, SubmittableResultImpl } from '@polkadot/api/types';
 import { web3FromAddress } from '@polkadot/extension-dapp';
@@ -14,12 +14,12 @@ import {
 } from './types';
 
 export class ExtrinsicApi {
-  private _extrinsicsQueue = new BehaviorSubject<ISubmittedExtrinsic[]>([]);
+  private _extrinsic = new ReplaySubject<ISubmittedExtrinsic>();
 
   constructor(private _substrateApi: Observable<ApiRx>) {}
 
-  public getExtrinsicsQueue$(): Observable<ISubmittedExtrinsic[]> {
-    return this._extrinsicsQueue;
+  public getExtrinsic$(): Observable<ISubmittedExtrinsic> {
+    return this._extrinsic;
   }
 
   public async handleExtrinsicSending<E extends EndpointWithRequest>(
@@ -37,18 +37,22 @@ export class ExtrinsicApi {
     const extrinsic = await makeSubmittableExtrinsic(this._substrateApi, endpoint, request);
 
     (await this._signAndSendExtrinsic(extrinsic.submittable, from)).subscribe(result);
-    this._pushExtrinsicToQueue(extrinsic, result);
 
-    await new Promise((resolve, reject) => {
+    const promise: Promise<void> = new Promise((resolve, reject) => {
       result.subscribe({
         complete: resolve,
         error: reject,
-        next: ({ isCompleted, isError }) => {
-          isError && reject(`tx.${endpoint} extrinsic is failed`);
+        next: ({ isCompleted, isError, events }) => {
+          const failedEvent = events.find(event => event.event.meta.name.toString() === 'ExtrinsicFailed');
+          (isError || failedEvent) && reject(`tx.${endpoint} extrinsic is failed`);
           isCompleted && resolve();
         },
       });
     });
+
+    this._pushExtrinsicToQueue(extrinsic, result, promise);
+
+    await promise;
   }
 
   private async _signAndSendExtrinsic(
@@ -65,8 +69,11 @@ export class ExtrinsicApi {
     substrateApi.setSigner(substrateWeb3.signer);
   }
 
-  private _pushExtrinsicToQueue(extrinsic: Extrinsic, result: Observable<SubmittableResultImpl>) {
-    const queue = this._extrinsicsQueue.getValue();
-    this._extrinsicsQueue.next([...queue, { extrinsic, result }]);
+  private _pushExtrinsicToQueue(
+    extrinsic: Extrinsic,
+    result: Observable<SubmittableResultImpl>,
+    promise: Promise<void>,
+  ) {
+    this._extrinsic.next({ extrinsic, result, promise });
   }
 }
