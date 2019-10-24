@@ -5,7 +5,7 @@ function arrowGenerator(color: string) {
     '&[x-placement*="bottom"] $arrow': {
       top: 0,
       left: 0,
-      marginTop: '-0.9em',
+      marginTop: '1em',
       width: '3em',
       height: '1em',
       '&::before': {
@@ -16,7 +16,7 @@ function arrowGenerator(color: string) {
     '&[x-placement*="top"] $arrow': {
       bottom: 0,
       left: 0,
-      marginBottom: '-0.9em',
+      marginBottom: '1em',
       width: '3em',
       height: '1em',
       '&::before': {
@@ -47,32 +47,33 @@ function arrowGenerator(color: string) {
   } as const;
 }
 
-const styles = (theme: Theme) => ({
-  arrowPopper: {
-    ...arrowGenerator(theme.palette.grey[700]),
-    maxWidth: '180px',
-    textAlign: 'center',
-  },
-  arrow: {
-    position: 'absolute',
-    fontSize: 7,
-    width: '3em',
-    height: '3em',
-    '&::before': {
-      content: '""',
-      margin: 'auto',
-      display: 'block',
-      width: 0,
-      height: 0,
-      borderStyle: 'solid',
+const styles = (theme: Theme) =>
+  ({
+    arrowPopper: {
+      ...arrowGenerator(theme.palette.grey[700]),
+      maxWidth: '180px',
+      textAlign: 'center',
     },
-  },
+    arrow: {
+      position: 'absolute',
+      fontSize: 7,
+      width: '3em',
+      height: '3em',
+      '&::before': {
+        content: '""',
+        margin: 'auto',
+        display: 'block',
+        width: 0,
+        height: 0,
+        borderStyle: 'solid',
+      },
+    },
 
-  title: {
-    fontFamily: theme.typography.fontFamily,
-    fontSize: '0.8125rem',
-  },
-} as const);
+    title: {
+      fontFamily: theme.typography.fontFamily,
+      fontSize: '0.8125rem',
+    },
+  } as const);
 
 export const provideStyles = withStyles(styles);
 
