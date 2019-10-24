@@ -2,9 +2,10 @@ import * as React from 'react';
 import BN from 'bn.js';
 import { tKeys, useTranslate } from 'services/i18n';
 import BaseIdentityIcon from '@polkadot/react-identicon';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { withStyles } from 'shared/styles';
-import { Avatar, Badge, Grid, Tooltip } from 'shared/view/elements';
+import { Avatar, Badge, Grid } from 'shared/view/elements';
 
 import { useStyles } from './Address.style';
 
