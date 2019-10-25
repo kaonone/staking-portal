@@ -4,12 +4,11 @@ import BN from 'bn.js';
 
 import { useDeps } from 'core';
 import { Button, Typography, Grid, CircleProgressBar, Hint } from 'shared/view/elements';
-import { DecimalsField } from 'shared/view/form';
+import { DecimalsField, SpyField } from 'shared/view/form';
 import { composeValidators, validatePositiveNumber, validateInteger, lessThenOrEqual } from 'shared/validators';
 import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './BalanceChangingForm.style';
-import SpyField from 'shared/view/form/SpyField/SpyField';
 
 interface IFormData {
   amount: string;
