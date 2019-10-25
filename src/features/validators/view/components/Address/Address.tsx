@@ -45,7 +45,7 @@ function Address(props: IProps) {
           <StyledBadge
             badgeContent={
               <Tooltip title={tooltipTitle} aria-label="offline-count" interactive>
-                <span className={classes.badgeContent}>{offlineCount}</span>
+                <span className={classes.badgeContent}>{offlineCount.toString()}</span>
               </Tooltip>
             }
           >
