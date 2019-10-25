@@ -8,6 +8,7 @@ import { Checkbox, Loading } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
 
 import { MakeValidatorsCheckingHandler } from '../../types';
+import Address from '../containers/Address/Address';
 
 interface ICellProps {
   stashAddress: string;
@@ -20,7 +21,7 @@ interface ICheckboxCellProps {
 }
 
 function AddressCell({ stashAddress }: ICellProps) {
-  return <>{stashAddress}</>;
+  return <Address address={stashAddress} />;
 }
 
 function CheckboxCell({ stashAddress, checkedValidators, makeValidatorsCheckingHandler }: ICheckboxCellProps) {
