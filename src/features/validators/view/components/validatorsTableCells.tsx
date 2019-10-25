@@ -7,8 +7,8 @@ import BalanceValue from 'components/BalanceValue';
 import { Checkbox, Loading } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
 
-import Address from '../containers/Address/Address';
 import { MakeValidatorsCheckingHandler } from '../../types';
+import Address from '../containers/Address/Address';
 
 interface ICellProps {
   stashAddress: string;

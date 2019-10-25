@@ -55,7 +55,7 @@ export default {
         notFound: 'Validators not found',
       },
       addressInfo: {
-        offline: 'Reported offline %{offlineCount} times, last at %{blockNumbers}',
+        offline: 'Reported offline %{offlineCount} times, last at #%{lastOfflineBlock}',
       },
     },
     stakes: {

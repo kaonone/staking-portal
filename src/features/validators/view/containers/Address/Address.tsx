@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { useDeps } from 'core';
+import * as R from 'ramda';
 import BN from 'bn.js';
+import { useDeps } from 'core';
 
 import { useSubscribable } from 'shared/helpers/react';
 
@@ -21,7 +22,12 @@ function Address(props: IProps) {
     [validatorOfflineInfo],
   );
 
-  return <AddressCard address={address} offlineCount={offlineCount} offlineInfo={validatorOfflineInfo} />;
+  const lastOfflineBlock = React.useMemo(() => {
+    const last = validatorOfflineInfo && R.last(validatorOfflineInfo);
+    return last && last.blockNumber;
+  }, [validatorOfflineInfo]);
+
+  return <AddressCard address={address} offlineCount={offlineCount} lastOfflineBlock={lastOfflineBlock} />;
 }
 
 export default Address;

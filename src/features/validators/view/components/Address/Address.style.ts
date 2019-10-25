@@ -1,6 +1,6 @@
 import { Theme, makeStyles } from 'shared/styles';
 
-export const useStyles = makeStyles((_theme: Theme) => {
+export const useStyles = makeStyles((theme: Theme) => {
   return {
     icon: {
       width: '100%',
@@ -17,6 +17,7 @@ export const useStyles = makeStyles((_theme: Theme) => {
       justifyContent: 'center',
       width: '100%',
       height: '100%',
+      padding: `0 ${theme.spacing(0.75)}px`,
       userSelect: 'none',
     },
   };
