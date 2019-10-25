@@ -1,23 +1,28 @@
 import React from 'react';
 import { Form } from 'react-final-form';
+import BN from 'bn.js';
 
 import { useDeps } from 'core';
 import { Button, Typography, Grid, CircleProgressBar, Hint } from 'shared/view/elements';
 import { DecimalsField } from 'shared/view/form';
-import { composeValidators, validatePositiveNumber, validateInteger } from 'shared/validators';
+import { composeValidators, validatePositiveNumber, validateInteger, lessThenOrEqual } from 'shared/validators';
 import { useSubscribable } from 'shared/helpers/react';
 
 import { useStyles } from './BalanceChangingForm.style';
+import SpyField from 'shared/view/form/SpyField/SpyField';
 
 interface IFormData {
   amount: string;
+  availableAmount: BN;
 }
 
 const fieldNames: { [K in keyof IFormData]: K } = {
   amount: 'amount',
+  availableAmount: 'availableAmount',
 };
 
 interface IProps {
+  availableAmount: BN;
   title: string;
   placeholder: string;
   cancelButtonText: string;
@@ -27,7 +32,7 @@ interface IProps {
 }
 
 function BalanceChangingForm(props: IProps) {
-  const { title, placeholder, cancelButtonText, submitButtonText, onSubmit, onCancel } = props;
+  const { title, placeholder, cancelButtonText, submitButtonText, onSubmit, onCancel, availableAmount } = props;
 
   const classes = useStyles();
   const { api } = useDeps();
@@ -36,14 +41,15 @@ function BalanceChangingForm(props: IProps) {
   const initialValues = React.useMemo<IFormData>(
     () => ({
       amount: '',
+      availableAmount,
     }),
     [],
   );
 
   const baseDecimals = chainProps ? chainProps.tokenDecimals : 0;
   const validateAmount = React.useMemo(() => {
-    return composeValidators(validateInteger, validatePositiveNumber);
-  }, []);
+    return composeValidators(validateInteger, validatePositiveNumber, lessThenOrEqual(availableAmount));
+  }, [availableAmount]);
 
   if (!chainPropsMeta.loaded) {
     return (
@@ -76,6 +82,7 @@ function BalanceChangingForm(props: IProps) {
                 name={fieldNames.amount}
                 placeholder={placeholder}
               />
+              <SpyField name={fieldNames.availableAmount} availableAmount={availableAmount} />
             </Grid>
             {!!submitError && (
               <Grid item xs={12}>

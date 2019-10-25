@@ -2,7 +2,13 @@ import BN from 'bn.js';
 import { O } from 'ts-toolbelt';
 import { GenericAccountId, Vec, Option } from '@polkadot/types';
 import { ChainProperties, AccountId, StakingLedger } from '@polkadot/types/interfaces';
-import { DerivedStaking, DerivedSessionInfo, DerivedRecentlyOffline } from '@polkadot/api-derive/types';
+import {
+  DerivedStaking,
+  DerivedSessionInfo,
+  DerivedRecentlyOffline,
+  DerivedBalances,
+  DerivedFees,
+} from '@polkadot/api-derive/types';
 
 // [Endpoint]: [Request, ConvertedRequestForApi, ApiResponse, ConvertedResponse]
 interface ISignatures {
@@ -12,6 +18,8 @@ interface ISignatures {
   'derive.staking.info': [string, GenericAccountId, DerivedStaking, IDerivedStaking];
   'derive.staking.recentlyOffline': [null, null, DerivedRecentlyOffline, DerivedRecentlyOffline];
   'derive.session.info': [null, null, DerivedSessionInfo, DerivedSessionInfo];
+  'derive.balances.all': [string, GenericAccountId, DerivedBalances, DerivedBalances];
+  'derive.balances.fees': [string, GenericAccountId, DerivedFees, DerivedFees];
 }
 
 export type Endpoint = keyof ISignatures;

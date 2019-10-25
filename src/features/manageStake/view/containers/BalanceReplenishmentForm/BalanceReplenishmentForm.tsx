@@ -23,6 +23,18 @@ function BalanceReplenishmentForm(props: IProps) {
   const { api } = useDeps();
   const [isExistsStake, isExistsStakeMeta] = useSubscribable(() => api.checkStakeExisting$(address), [address]);
 
+  const [balance] = useSubscribable(() => api.getBalanceInfo$(address), [address]);
+  const [fee] = useSubscribable(() => api.getFeesInfo$(address), [address]);
+
+  const minBalanceAfterBonding =
+    (fee &&
+      (fee.transactionBaseFee.gt(fee.transactionByteFee) ? fee.transactionBaseFee : fee.transactionByteFee).mul(
+        new BN(1000),
+      )) ||
+    new BN(0);
+
+  const availableAmount = (balance && balance.availableBalance.sub(minBalanceAfterBonding)) || new BN(0);
+
   const onSubmit = React.useCallback(
     async (values: IFormData) => {
       try {
@@ -43,6 +55,7 @@ function BalanceReplenishmentForm(props: IProps) {
   return (
     <Loading meta={[isExistsStakeMeta]} variant="hint" progressVariant="circle">
       <BalanceChangingForm
+        availableAmount={availableAmount}
         title={t(tKeys.title.getKey())}
         placeholder={t(tKeys.field.placeholder.getKey())}
         cancelButtonText={t(tKeys.cancelButtonText.getKey())}

@@ -3,7 +3,7 @@ import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
 import { ApiRx } from '@polkadot/api';
-import { DerivedSessionInfo, DerivedRecentlyOffline } from '@polkadot/api-derive/types';
+import { DerivedSessionInfo, DerivedFees, DerivedBalances, DerivedRecentlyOffline } from '@polkadot/api-derive/types';
 import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
@@ -80,6 +80,16 @@ export class Api {
   @memoize(identity)
   public getStakingInfo$(stashAddress: string): Observable<IDerivedStaking> {
     return callPolkaApi(this._substrateApi, 'derive.staking.info', stashAddress);
+  }
+
+  @memoize(identity)
+  public getFeesInfo$(stashAddress: string): Observable<DerivedFees> {
+    return callPolkaApi(this._substrateApi, 'derive.balances.fees', stashAddress);
+  }
+
+  @memoize(identity)
+  public getBalanceInfo$(stashAddress: string): Observable<DerivedBalances> {
+    return callPolkaApi(this._substrateApi, 'derive.balances.all', stashAddress);
   }
 
   @memoize(identity)

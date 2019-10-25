@@ -16,6 +16,8 @@ export const fromResponseConverters: FromResponseConverters = {
     return unwrappedLedger && convertStakingLedger(unwrappedLedger);
   },
   'derive.session.info': response => response,
+  'derive.balances.all': response => response,
+  'derive.balances.fees': response => response,
   'derive.staking.recentlyOffline': response => response,
 };
 
