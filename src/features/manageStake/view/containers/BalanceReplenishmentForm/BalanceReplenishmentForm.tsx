@@ -6,7 +6,7 @@ import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
 import { Loading } from 'shared/view/elements';
-import { getErrorMsg } from 'shared/helpers';
+import { getErrorMsg, max } from 'shared/helpers';
 import { useSubscribable } from 'shared/helpers/react';
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
 
@@ -22,6 +22,14 @@ function BalanceReplenishmentForm(props: IProps) {
 
   const { api } = useDeps();
   const [isExistsStake, isExistsStakeMeta] = useSubscribable(() => api.checkStakeExisting$(address), [address]);
+
+  const [balance] = useSubscribable(() => api.getBalanceInfo$(address), [address]);
+  const [fee] = useSubscribable(() => api.getFeesInfo$(address), [address]);
+
+  const minBalanceAfterBonding =
+    (fee && max(fee.transactionBaseFee, fee.transactionByteFee).mul(new BN(1000))) || new BN(0);
+
+  const availableAmount = (balance && balance.availableBalance.sub(minBalanceAfterBonding)) || new BN(0);
 
   const onSubmit = React.useCallback(
     async (values: IFormData) => {
@@ -43,6 +51,7 @@ function BalanceReplenishmentForm(props: IProps) {
   return (
     <Loading meta={[isExistsStakeMeta]} variant="hint" progressVariant="circle">
       <BalanceChangingForm
+        availableAmount={availableAmount}
         title={t(tKeys.title.getKey())}
         placeholder={t(tKeys.field.placeholder.getKey())}
         cancelButtonText={t(tKeys.cancelButtonText.getKey())}
