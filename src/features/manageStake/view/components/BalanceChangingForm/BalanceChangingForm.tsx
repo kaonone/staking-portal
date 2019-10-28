@@ -86,6 +86,7 @@ function BalanceChangingForm(props: IProps) {
               <DecimalsField
                 validate={validateAmount}
                 baseDecimals={baseDecimals}
+                maxValue={availableAmount}
                 name={fieldNames.amount}
                 placeholder={placeholder}
               />

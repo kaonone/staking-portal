@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { GetProps } from '_helpers';
+import BN from 'bn.js';
 import { formatBalance } from '@polkadot/util';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 import TextInput from 'shared/view/elements/Input/TextInput';
 import { fromBaseUnit } from 'shared/helpers';
@@ -12,8 +14,8 @@ import { calculateNumberFromDecimals } from 'shared/helpers/calculateNumberFromD
 
 interface IOwnProps {
   baseDecimals: number;
-  placeholder: string;
   value: string;
+  maxValue?: BN;
   onChange: (value: string) => void;
 }
 
@@ -25,7 +27,7 @@ interface IOption<T> {
 type IProps = IOwnProps & Omit<GetProps<typeof TextInput>, 'ref'>;
 
 function DecimalsInput(props: IProps) {
-  const { placeholder, onChange, baseDecimals, value, ...restInputProps } = props;
+  const { onChange, baseDecimals, value, maxValue, ...restInputProps } = props;
 
   const [siPrefix, setSiPrefix] = React.useState(getInitialPrefix(value, baseDecimals));
   const amount = React.useMemo(() => value && fromBaseUnit(value, siPrefix + baseDecimals), [
@@ -43,7 +45,9 @@ function DecimalsInput(props: IProps) {
   const handleSelectChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSiPrefix(Number(event.target.value));
-      onChange(calculateNumberFromDecimals(amount, Number(event.target.value), baseDecimals));
+
+      const roundedAmount = getRoundedValue(amount, baseDecimals, Number(event.target.value));
+      onChange(calculateNumberFromDecimals(roundedAmount, Number(event.target.value), baseDecimals));
     },
     [amount, baseDecimals],
   );
@@ -56,6 +60,10 @@ function DecimalsInput(props: IProps) {
     },
     [siPrefix, baseDecimals],
   );
+
+  const handleMaxButtonClick = React.useCallback(() => {
+    maxValue && onChange(maxValue.toString());
+  }, [onChange, maxValue && maxValue.toString()]);
 
   const options = React.useMemo(
     () =>
@@ -76,9 +84,15 @@ function DecimalsInput(props: IProps) {
             {...restInputProps}
             value={amount}
             variant="outlined"
-            placeholder={placeholder}
             fullWidth
             onChange={handleInputChange}
+            InputProps={{
+              endAdornment: maxValue && (
+                <Button color="primary" onClick={handleMaxButtonClick}>
+                  MAX
+                </Button>
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={3}>
@@ -103,6 +117,17 @@ function getInitialPrefix(amount: string, baseDecimals: number): number {
   const prefix = zeros ? zeros.length - baseDecimals : 0;
 
   return prefix;
+}
+
+function getRoundedValue(value: string, baseDecimals: number, siPrefix: number): string {
+  const [whole, fraction] = value.split('.');
+  const isValueNeedToBeRounded = fraction && fraction.length - siPrefix > baseDecimals;
+
+  if (isValueNeedToBeRounded) {
+    return [whole, fraction.substr(0, baseDecimals + siPrefix)].join('.');
+  }
+
+  return value;
 }
 
 export default DecimalsInput;

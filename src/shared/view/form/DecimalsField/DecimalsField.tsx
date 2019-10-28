@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { GetProps } from '_helpers';
+import BN from 'bn.js';
 import { FieldRenderProps } from 'react-final-form';
 
 import { useTranslate } from 'services/i18n';
@@ -8,13 +9,13 @@ import { TextInput, DecimalsInput } from 'shared/view/elements';
 
 interface IOwnProps {
   baseDecimals: number;
-  placeholder: string;
+  maxValue?: BN;
 }
 
 type IProps = Omit<GetProps<typeof TextInput>, 'ref'> & FieldRenderProps & IOwnProps;
 
 function DecimalsField(props: IProps) {
-  const { baseDecimals, placeholder, input, meta, ...rest } = props;
+  const { baseDecimals, maxValue, input, meta, ...rest } = props;
   const { t } = useTranslate();
 
   const error =
@@ -25,11 +26,11 @@ function DecimalsField(props: IProps) {
   return (
     <DecimalsInput
       baseDecimals={baseDecimals}
+      maxValue={maxValue}
       {...rest}
       helperText={error}
       error={Boolean(error)}
       {...input}
-      placeholder={placeholder}
     />
   );
 }
