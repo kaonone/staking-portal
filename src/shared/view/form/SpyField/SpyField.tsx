@@ -1,28 +1,23 @@
 import * as React from 'react';
-import { GetProps } from '_helpers';
 import { FieldRenderProps } from 'react-final-form';
-import BN from 'bn.js';
 
-import { getFieldWithComponent } from 'shared/helpers/react';
-import { TextInput } from 'shared/view/elements';
+import { getFieldWithComponent, useOnChangeState } from 'shared/helpers/react';
 
-interface IOwnProps {
-  availableAmount: BN;
+interface IOwnProps<T> {
+  value: T;
+  compare?: (prev: T, current: T) => boolean;
 }
 
-type IProps = Omit<GetProps<typeof TextInput>, 'ref'> & FieldRenderProps & IOwnProps;
+type IProps<T> = FieldRenderProps & IOwnProps<T>;
 
-function SpyField(props: IProps) {
-  const { input, availableAmount, ...rest } = props;
+function SpyField<T>(props: IProps<T>) {
+  const { input, value, compare } = props;
   const { onChange } = input;
+  const defaultCompare = (prev: T, current: T) => prev === current;
 
-  React.useMemo(() => {
-    onChange(availableAmount);
-  }, [availableAmount]);
+  useOnChangeState(value, compare || defaultCompare, (_prev, current) => onChange(current));
 
-  return (
-    <TextInput {...rest} {...input} type="hidden" />
-  );
+  return <input {...input} type="hidden" />;
 }
 
 export default getFieldWithComponent(SpyField);

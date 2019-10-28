@@ -23,17 +23,6 @@ function CashWithdrawalForm(props: IProps) {
   const [info] = useSubscribable(() => api.getStakingInfo$(address), [address]);
   const bondedAmount = info && info.stakingLedger ? info.stakingLedger.active : new BN(0);
 
-  const [fee] = useSubscribable(() => api.getFeesInfo$(address), [address]);
-
-  const minBalanceAfterBonding =
-    (fee &&
-      (fee.transactionBaseFee.gt(fee.transactionByteFee) ? fee.transactionBaseFee : fee.transactionByteFee).mul(
-        new BN(1000),
-      )) ||
-    new BN(0);
-
-  const availableAmount = bondedAmount.sub(minBalanceAfterBonding);
-
   const onSubmit = React.useCallback(
     async (values: IFormData) => {
       try {
@@ -51,7 +40,7 @@ function CashWithdrawalForm(props: IProps) {
 
   return (
     <BalanceChangingForm
-      availableAmount={availableAmount}
+      availableAmount={bondedAmount}
       title={t(tKeys.title.getKey())}
       placeholder={t(tKeys.field.placeholder.getKey())}
       cancelButtonText={t(tKeys.cancelButtonText.getKey())}

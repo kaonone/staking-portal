@@ -1,6 +1,8 @@
 import React from 'react';
+import * as R from 'ramda';
 import { Form } from 'react-final-form';
 import BN from 'bn.js';
+import { formatBalance } from '@polkadot/util';
 
 import { useDeps } from 'core';
 import { Button, Typography, Grid, CircleProgressBar, Hint } from 'shared/view/elements';
@@ -47,8 +49,14 @@ function BalanceChangingForm(props: IProps) {
 
   const baseDecimals = chainProps ? chainProps.tokenDecimals : 0;
   const validateAmount = React.useMemo(() => {
-    return composeValidators(validateInteger, validatePositiveNumber, lessThenOrEqual(availableAmount));
+    return composeValidators(
+      validateInteger,
+      validatePositiveNumber,
+      R.curry(lessThenOrEqual)(availableAmount, R.__, formatBalance),
+    );
   }, [availableAmount]);
+
+  const compareValues = (prev: BN, current: BN) => prev && prev.eq(current);
 
   if (!chainPropsMeta.loaded) {
     return (
@@ -81,7 +89,7 @@ function BalanceChangingForm(props: IProps) {
                 name={fieldNames.amount}
                 placeholder={placeholder}
               />
-              <SpyField name={fieldNames.availableAmount} availableAmount={availableAmount} />
+              <SpyField name={fieldNames.availableAmount} value={availableAmount} compare={compareValues} />
             </Grid>
             {!!submitError && (
               <Grid item xs={12}>

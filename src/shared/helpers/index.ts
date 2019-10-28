@@ -4,3 +4,4 @@ export { default as memoize } from './memoize';
 export * from './attachStaticFields';
 export * from './fromBaseUnit';
 export * from './toBaseUnit';
+export * from './max';

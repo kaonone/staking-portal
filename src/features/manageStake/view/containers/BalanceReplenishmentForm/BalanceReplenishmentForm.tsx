@@ -6,7 +6,7 @@ import { useDeps } from 'core';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 
 import { Loading } from 'shared/view/elements';
-import { getErrorMsg } from 'shared/helpers';
+import { getErrorMsg, max } from 'shared/helpers';
 import { useSubscribable } from 'shared/helpers/react';
 import BalanceChangingForm, { IFormData } from '../../components/BalanceChangingForm/BalanceChangingForm';
 
@@ -27,11 +27,7 @@ function BalanceReplenishmentForm(props: IProps) {
   const [fee] = useSubscribable(() => api.getFeesInfo$(address), [address]);
 
   const minBalanceAfterBonding =
-    (fee &&
-      (fee.transactionBaseFee.gt(fee.transactionByteFee) ? fee.transactionBaseFee : fee.transactionByteFee).mul(
-        new BN(1000),
-      )) ||
-    new BN(0);
+    (fee && max(fee.transactionBaseFee, fee.transactionByteFee).mul(new BN(1000))) || new BN(0);
 
   const availableAmount = (balance && balance.availableBalance.sub(minBalanceAfterBonding)) || new BN(0);
 
