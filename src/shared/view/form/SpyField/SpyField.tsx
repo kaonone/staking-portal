@@ -4,20 +4,23 @@ import { FieldRenderProps } from 'react-final-form';
 import { getFieldWithComponent, useOnChangeState } from 'shared/helpers/react';
 
 interface IOwnProps<T> {
-  value: T;
+  fieldValue: T; // final-form intercepts the 'value' property
   compare?: (prev: T, current: T) => boolean;
 }
 
-type IProps<T> = FieldRenderProps & IOwnProps<T>;
+type IProps<T> = Omit<FieldRenderProps, 'value'> & IOwnProps<T>;
 
 function SpyField<T>(props: IProps<T>) {
-  const { input, value, compare } = props;
+  const { input, fieldValue, compare } = props;
   const { onChange } = input;
-  const defaultCompare = (prev: T, current: T) => prev === current;
 
-  useOnChangeState(value, compare || defaultCompare, (_prev, current) => onChange(current));
+  useOnChangeState(fieldValue, compare || defaultCompare, (_prev, current) => onChange(current));
 
   return <input {...input} type="hidden" />;
+}
+
+function defaultCompare<T>(prev: T, current: T) {
+  return prev === current;
 }
 
 export default getFieldWithComponent(SpyField);

@@ -56,7 +56,7 @@ function BalanceChangingForm(props: IProps) {
     );
   }, [availableAmount]);
 
-  const compareValues = (prev: BN, current: BN) => prev && prev.eq(current);
+  const compareValues = (prev: BN, current: BN) => prev.eq(current);
 
   if (!chainPropsMeta.loaded) {
     return (
@@ -89,7 +89,7 @@ function BalanceChangingForm(props: IProps) {
                 name={fieldNames.amount}
                 placeholder={placeholder}
               />
-              <SpyField name={fieldNames.availableAmount} value={availableAmount} compare={compareValues} />
+              <SpyField name={fieldNames.availableAmount} fieldValue={availableAmount} compare={compareValues} />
             </Grid>
             {!!submitError && (
               <Grid item xs={12}>
