@@ -14,9 +14,8 @@ import { calculateNumberFromDecimals } from 'shared/helpers/calculateNumberFromD
 
 interface IOwnProps {
   baseDecimals: number;
-  placeholder: string;
   value: string;
-  maxValue: BN;
+  maxValue?: BN;
   onChange: (value: string) => void;
 }
 
@@ -28,7 +27,7 @@ interface IOption<T> {
 type IProps = IOwnProps & Omit<GetProps<typeof TextInput>, 'ref'>;
 
 function DecimalsInput(props: IProps) {
-  const { placeholder, onChange, baseDecimals, value, maxValue, ...restInputProps } = props;
+  const { onChange, baseDecimals, value, maxValue, ...restInputProps } = props;
 
   const [siPrefix, setSiPrefix] = React.useState(getInitialPrefix(value, baseDecimals));
   const [suffix, setSuffix] = React.useState('');
@@ -74,9 +73,9 @@ function DecimalsInput(props: IProps) {
     [siPrefix, baseDecimals],
   );
 
-  const handleButtonClick = React.useCallback(() => {
-    onChange(maxValue.toString());
-  }, [onChange, maxValue]);
+  const handleMaxButtonClick = React.useCallback(() => {
+    maxValue && onChange(maxValue.toString());
+  }, [onChange, maxValue && maxValue.toString()]);
 
   const options = React.useMemo(
     () =>
@@ -89,12 +88,6 @@ function DecimalsInput(props: IProps) {
     [baseDecimals],
   );
 
-  const renderMaxButton = () => (
-    <Button color="primary" onClick={handleButtonClick}>
-      MAX
-    </Button>
-  );
-
   return (
     <>
       <Grid container spacing={1}>
@@ -103,10 +96,15 @@ function DecimalsInput(props: IProps) {
             {...restInputProps}
             value={amount}
             variant="outlined"
-            placeholder={placeholder}
             fullWidth
             onChange={handleInputChange}
-            InputProps={{ endAdornment: renderMaxButton() }}
+            InputProps={{
+              endAdornment: maxValue && (
+                <Button color="primary" onClick={handleMaxButtonClick}>
+                  MAX
+                </Button>
+              ),
+            }}
           />
         </Grid>
         <Grid item xs={3}>
@@ -134,15 +132,14 @@ function getInitialPrefix(amount: string, baseDecimals: number): number {
 }
 
 function getRoundedValue(value: string, baseDecimals: number, siPrefix: number): string {
-  const comps = value.split('.');
-  const fraction = comps[1];
+  const [whole, fraction] = value.split('.');
   const isValueNeedToBeRounded = fraction && fraction.length - siPrefix > baseDecimals;
 
   if (isValueNeedToBeRounded) {
-    comps[1] = fraction.substr(0, baseDecimals + siPrefix);
+    return [whole, fraction.substr(0, baseDecimals + siPrefix)].join('.');
   }
 
-  return comps.join('.');
+  return value;
 }
 
 export default DecimalsInput;
