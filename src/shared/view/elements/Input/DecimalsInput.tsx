@@ -31,8 +31,11 @@ function DecimalsInput(props: IProps) {
   const { placeholder, onChange, baseDecimals, value, maxValue, ...restInputProps } = props;
 
   const [siPrefix, setSiPrefix] = React.useState(getInitialPrefix(value, baseDecimals));
-  const amount = React.useMemo(() => value && fromBaseUnit(value, siPrefix + baseDecimals), [
+  const [suffix, setSuffix] = React.useState('');
+
+  const amount = React.useMemo(() => value && fromBaseUnit(value, siPrefix + baseDecimals) + suffix, [
     value,
+    suffix,
     siPrefix,
     baseDecimals,
   ]);
@@ -55,7 +58,16 @@ function DecimalsInput(props: IProps) {
 
   const handleInputChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (/^\d*?$/.test(event.target.value)) {
+      const inputValidationRegExp = new RegExp(`^$|^\\d+?\\.?\\d{0,${baseDecimals + siPrefix}}$`);
+
+      if (inputValidationRegExp.test(event.target.value)) {
+        const suffixRegExp = event.target.value.match(/^.+?(\.?0*)$/);
+
+        if (suffixRegExp) {
+          const [, currentSuffix] = suffixRegExp;
+          setSuffix(currentSuffix);
+        }
+
         onChange(event.target.value && calculateNumberFromDecimals(event.target.value, siPrefix, baseDecimals));
       }
     },
