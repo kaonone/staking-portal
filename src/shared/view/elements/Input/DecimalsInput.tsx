@@ -48,6 +48,7 @@ function DecimalsInput(props: IProps) {
   const handleSelectChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSiPrefix(Number(event.target.value));
+      setSuffix('');
 
       const roundedAmount = getRoundedValue(amount, baseDecimals, Number(event.target.value));
       onChange(calculateNumberFromDecimals(roundedAmount, Number(event.target.value), baseDecimals));
@@ -74,6 +75,7 @@ function DecimalsInput(props: IProps) {
   );
 
   const handleMaxButtonClick = React.useCallback(() => {
+    setSuffix('');
     maxValue && onChange(maxValue.toString());
   }, [onChange, maxValue && maxValue.toString()]);
 
