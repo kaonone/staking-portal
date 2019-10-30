@@ -220,7 +220,7 @@
     "@material-ui/icons": "^3.0.1",
     "@material-ui/lab": "^3.0.0-alpha.25",
     "@material-ui/styles": "^4.4.1",
-    "@polkadot/api": "^0.92.1",
+    "@polkadot/api": "^0.95.2",
     "@polkadot/extension-dapp": "^0.10.1",
     "@polkadot/react-identicon": "^0.45.1",
     "@types/accounting": "^0.4.1",

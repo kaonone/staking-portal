@@ -12,17 +12,19 @@ interface IProps {
 function Validators(props: IProps) {
   const { stakeAddress } = props;
   const { api } = useDeps();
-  const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stakeAddress), []);
-
-  const nominees = (info && info.nominators) || [];
+  const [nominators, nominatorsMeta] = useSubscribable(() => api.getStakeNominators$(stakeAddress), [], []);
 
   return (
     <>
       <Typography variant="h4" gutterBottom>
         Nominees
       </Typography>
-      <Loading meta={infoMeta} variant="hint">
-        {!!nominees.length ? <ValidatorsList validatorStashes={nominees} /> : <Hint>Your stake is not nominated</Hint>}
+      <Loading meta={nominatorsMeta} variant="hint">
+        {!!nominators.length ? (
+          <ValidatorsList validatorStashes={nominators} />
+        ) : (
+          <Hint>Your stake is not nominated</Hint>
+        )}
       </Loading>
     </>
   );

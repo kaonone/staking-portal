@@ -83,6 +83,11 @@ export class Api {
   }
 
   @memoize(identity)
+  public getStakeNominators$(stashAddress: string): Observable<string[]> {
+    return callPolkaApi(this._substrateApi, 'query.staking.nominators', stashAddress);
+  }
+
+  @memoize(identity)
   public getFeesInfo$(stashAddress: string): Observable<DerivedFees> {
     return callPolkaApi(this._substrateApi, 'derive.balances.fees', stashAddress);
   }

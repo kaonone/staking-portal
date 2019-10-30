@@ -14,6 +14,7 @@ import {
 interface ISignatures {
   'rpc.system.properties': [null, null, ChainProperties, IChainProperties];
   'query.session.validators': [null, null, Vec<AccountId>, string[]];
+  'query.staking.nominators': [string, GenericAccountId, [Vec<AccountId>, unknown], string[]];
   'query.staking.ledger': [string, GenericAccountId, Option<StakingLedger>, IStakingLedger | null];
   'derive.staking.info': [string, GenericAccountId, DerivedStaking, IDerivedStaking];
   'derive.staking.recentlyOffline': [null, null, DerivedRecentlyOffline, DerivedRecentlyOffline];

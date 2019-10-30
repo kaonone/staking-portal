@@ -11,6 +11,7 @@ export const fromResponseConverters: FromResponseConverters = {
   }),
   'derive.staking.info': response => convertDerivedStaking(response),
   'query.session.validators': response => response.map(String),
+  'query.staking.nominators': ([response]) => response.map(String),
   'query.staking.ledger': response => {
     const unwrappedLedger = response.unwrapOr(null);
     return unwrappedLedger && convertStakingLedger(unwrappedLedger);
@@ -50,17 +51,17 @@ function convertDerivedStaking(value: DerivedStaking): IDerivedStaking {
 }
 
 function convertStakingLedger(value: StakingLedger): IStakingLedger {
-  return ({
+  return {
     stash: value.stash.toString(),
     active: value.active.toBn(),
     total: value.total.toBn(),
     unlocking: value.unlocking.toArray().map(convertUnlockChunk),
-  });
+  };
 }
 
 function convertUnlockChunk(value: UnlockChunk): IUnlockChunk {
-  return ({
+  return {
     era: value.era.toBn(),
     value: value.value.toBn(),
-  });
+  };
 }
