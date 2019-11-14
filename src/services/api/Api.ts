@@ -1,11 +1,4 @@
-import {
-  Observable,
-  from,
-  fromEventPattern,
-  defer,
-  ReplaySubject,
-  combineLatest,
-} from 'rxjs';
+import { Observable, from, fromEventPattern, defer, ReplaySubject, combineLatest } from 'rxjs';
 import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
@@ -153,29 +146,32 @@ export class Api {
   }
 
   @memoize()
-  public getTotalBalanceInfo$(): { totalBalance: Observable<BN>; totalBonded: Observable<BN> } {
-    const allBalances: Observable<DerivedBalances[]> = this.getSubstrateAccounts$().pipe(
-      switchMap(accounts => combineLatest(accounts.map(account => this.getBalanceInfo$(account.address)))),
-    );
+  public getTotalBalanceInfo$(): Observable<{ totalBalance: BN; totalBonded: BN }> {
+    return this.getSubstrateAccounts$().pipe(
+      switchMap(accounts =>
+        combineLatest(
+          accounts.map(account => {
+            const balanceInfo$ = this.getBalanceInfo$(account.address);
+            const stakingInfo$ = this.getStakingInfo$(account.address);
 
-    const totalBalance = allBalances.pipe(
-      map(balance => balance.reduce((total, currentBalance) => total.add(currentBalance.availableBalance), new BN(0))),
-    );
-
-    const allBonded: Observable<IDerivedStaking[]> = this.getSubstrateAccounts$().pipe(
-      switchMap(accounts => combineLatest(accounts.map(account => this.getStakingInfo$(account.address)))),
-    );
-
-    const totalBonded = allBonded.pipe(
-      map(bonded =>
-        bonded.reduce(
-          (total, currentBonded) =>
-            total.add((currentBonded.stakingLedger && currentBonded.stakingLedger.active) || new BN(0)),
-          new BN(0),
+            return combineLatest([balanceInfo$, stakingInfo$]).pipe(
+              map(([balanceInfo, stakingInfo]) => ({ balanceInfo, stakingInfo })),
+            );
+          }),
+        ),
+      ),
+      map(allInfos =>
+        allInfos.reduce(
+          (acc, { balanceInfo, stakingInfo }) => ({
+            totalBalance: acc.totalBalance.add(balanceInfo.availableBalance),
+            totalBonded: acc.totalBonded.add(stakingInfo.stakingLedger ? stakingInfo.stakingLedger.active : new BN(0)),
+          }),
+          {
+            totalBalance: new BN(0),
+            totalBonded: new BN(0),
+          },
         ),
       ),
     );
-
-    return { totalBalance, totalBonded };
   }
 }

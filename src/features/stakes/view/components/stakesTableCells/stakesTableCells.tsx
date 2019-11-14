@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import BN from 'bn.js';
 import { useDeps } from 'core';
-import { formatBalance } from '@polkadot/util';
 
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { useSubscribable } from 'shared/helpers/react';
@@ -36,11 +35,9 @@ export function NominatorsCountCell({ account }: ICellProps) {
 export function BalanceCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [balance, balanceMeta] = useSubscribable(() => api.getBalanceInfo$(account.address), [account]);
-  const [chainProps] = useSubscribable(() => api.getChainProps$(), []);
-  const baseDecimals = chainProps ? chainProps.tokenDecimals : 0;
-  const formattedBalance = formatBalance(balance && balance.availableBalance, true, baseDecimals);
+  const balanceSize = balance && balance.availableBalance || new BN(0);
 
-  return <Loading meta={balanceMeta}>{formattedBalance}</Loading>;
+  return <Loading meta={balanceMeta}><BalanceValue input={balanceSize} /></Loading>;
 }
 
 export function StakeSizeCell({ account }: ICellProps) {

@@ -69,7 +69,7 @@ function StakesList(props: IProps) {
               <Table.Cell>{({ data }) => <NominatorsCountCell account={data} />}</Table.Cell>
             </Table.Column>
             <Table.Column>
-              <Table.Head>{t(tKeys.columns.size.getKey())}</Table.Head>
+              <Table.Head>{t(tKeys.columns.bonded.getKey())}</Table.Head>
               <Table.Cell>{({ data }) => <StakeSizeCell account={data} />}</Table.Cell>
             </Table.Column>
             <Table.Column>

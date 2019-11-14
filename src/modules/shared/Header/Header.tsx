@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps, Link } from 'react-router-dom';
-import { formatBalance } from '@polkadot/util';
+import BN from 'bn.js';
 
+import { IMetric, BalanceMetrics } from 'shared/view/components/BalanceMetrics/BalanceMetrics';
 import { Back } from 'shared/view/elements/Icons';
-import { Grid, IconButton, Typography, Loading, Divider } from 'shared/view/elements';
+import { Grid, IconButton, Typography, Loading } from 'shared/view/elements';
 import { withComponent, useSubscribable } from 'shared/helpers/react';
+import BalanceValue from 'components/BalanceValue';
 import { useTranslate, tKeys as tKeysAll } from 'services/i18n';
 import { useDeps } from 'core';
 
@@ -17,23 +19,31 @@ interface IOwnProps {
   backRoutePath?: string;
   title: React.ReactNode;
   additionalContent?: React.ReactNode;
+  showMetrics?: boolean;
 }
 
 type IProps = IOwnProps & StylesProps & RouteComponentProps;
 
 function Header(props: IProps) {
-  const { classes, actions, title, backRoutePath, additionalContent } = props;
+  const { classes, actions, title, backRoutePath, additionalContent, showMetrics } = props;
   const { t } = useTranslate();
   const tKeys = tKeysAll.shared;
   const { api } = useDeps();
 
-  const [balance, balanceMeta] = useSubscribable(() => api.getTotalBalanceInfo$().totalBalance, []);
-  const [bonded, bondedMeta] = useSubscribable(() => api.getTotalBalanceInfo$().totalBonded, []);
-  const [chainProps] = useSubscribable(() => api.getChainProps$(), []);
-  const baseDecimals = chainProps ? chainProps.tokenDecimals : 0;
+  const [totalBalanceInfo, totalBalanceInfoMeta] = useSubscribable(() => api.getTotalBalanceInfo$(), []);
 
-  const formattedBalance = formatBalance(balance, true, baseDecimals);
-  const formattedBonded = formatBalance(bonded, true, baseDecimals);
+  const getBalanceValueComponent = (input: BN) => <BalanceValue input={input} />;
+
+  const metrics: IMetric[] = [
+    {
+      title: t(tKeys.balance.getKey()),
+      value: getBalanceValueComponent((totalBalanceInfo && totalBalanceInfo.totalBalance) || new BN(0)),
+    },
+    {
+      title: t(tKeys.bonded.getKey()),
+      value: getBalanceValueComponent((totalBalanceInfo && totalBalanceInfo.totalBonded) || new BN(0)),
+    },
+  ];
 
   return (
     <div className={classes.root}>
@@ -50,25 +60,13 @@ function Header(props: IProps) {
             {title}
           </Typography>
         </Grid>
-        <Grid item>
-          <Typography variant="subtitle2" noWrap className={classes.balanceTitle}>
-            {t(tKeys.balance.getKey())}
-          </Typography>
-          <Typography variant="h5" noWrap weight="bold" className={classes.title}>
-            <Loading meta={balanceMeta}>{formattedBalance}</Loading>
-          </Typography>
-        </Grid>
-        <Grid item className={classes.dividerItem}>
-          <Divider orientation="vertical" className={classes.divider} />
-        </Grid>
-        <Grid item>
-          <Typography variant="subtitle2" noWrap className={classes.balanceTitle}>
-            {t(tKeys.bonded.getKey())}
-          </Typography>
-          <Typography variant="h5" noWrap weight="bold" className={classes.title}>
-            <Loading meta={bondedMeta}>{formattedBonded}</Loading>
-          </Typography>
-        </Grid>
+        {showMetrics && (
+          <Loading meta={totalBalanceInfoMeta} progressVariant="circle">
+            <Grid item>
+              <BalanceMetrics metrics={metrics} />
+            </Grid>
+          </Loading>
+        )}
         {actions &&
           !!actions.length &&
           actions.map((action, index) => (

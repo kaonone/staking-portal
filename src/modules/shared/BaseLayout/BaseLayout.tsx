@@ -12,6 +12,7 @@ interface IOwnProps {
   actions?: React.ReactNode[];
   backRoutePath?: string;
   additionalHeaderContent?: React.ReactNode;
+  showMetrics?: boolean;
   hidePageNavigation?: boolean;
   children: React.ReactNode;
 }
@@ -21,24 +22,31 @@ type IProps = IOwnProps & StylesProps;
 class BaseLayout extends React.PureComponent<IProps> {
   public render() {
     const {
-      children, actions, backRoutePath, title, classes, additionalHeaderContent, hidePageNavigation,
+      children,
+      actions,
+      backRoutePath,
+      title,
+      classes,
+      additionalHeaderContent,
+      hidePageNavigation,
+      showMetrics,
     } = this.props;
+
     const headerProps: GetProps<typeof Header> = {
-      actions, backRoutePath, title, additionalContent: additionalHeaderContent,
+      actions,
+      backRoutePath,
+      title,
+      showMetrics,
+      additionalContent: additionalHeaderContent,
     };
 
     return (
-      <RowsLayout
-        spacing={4}
-        classes={{ root: classes.rootRowsLayout }}
-      >
+      <RowsLayout spacing={4} classes={{ root: classes.rootRowsLayout }}>
         <RowsLayout.ContentBlock>
           <Header {...headerProps} />
           {!hidePageNavigation && <PageNavigation />}
         </RowsLayout.ContentBlock>
-        <RowsLayout.ContentBlock fillIn>
-          {children}
-        </RowsLayout.ContentBlock>
+        <RowsLayout.ContentBlock fillIn>{children}</RowsLayout.ContentBlock>
       </RowsLayout>
     );
   }

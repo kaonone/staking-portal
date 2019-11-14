@@ -66,7 +66,7 @@ export default {
           name: 'Name',
           balance: 'Balance',
           nominees: 'Nominees',
-          size: 'Size',
+          bonded: 'Bonded',
           awaitingWithdrawal: 'Awaiting unbonding',
           redeemable: 'Redeemable',
         },

@@ -4,11 +4,11 @@ const styles = (_theme: Theme) => ({
   root: {},
 
   metricTitle: {
-    color: 'inherit',
+    color: 'rgba(255, 255, 255, 0.8)',
   },
 
   metricValue: {
-    color: 'inherit',
+    color: '#fff',
   },
 });
 
