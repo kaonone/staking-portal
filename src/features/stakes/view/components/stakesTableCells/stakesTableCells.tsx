@@ -32,6 +32,18 @@ export function NominatorsCountCell({ account }: ICellProps) {
   return <Loading meta={infoMeta}>{nominatorsCount}</Loading>;
 }
 
+export function BalanceCell({ account }: ICellProps) {
+  const { api } = useDeps();
+  const [balance, balanceMeta] = useSubscribable(() => api.getBalanceInfo$(account.address), [account]);
+  const balanceSize = (balance && balance.availableBalance) || new BN(0);
+
+  return (
+    <Loading meta={balanceMeta}>
+      <BalanceValue input={balanceSize} />
+    </Loading>
+  );
+}
+
 export function StakeSizeCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(account.address), [account.address], null);

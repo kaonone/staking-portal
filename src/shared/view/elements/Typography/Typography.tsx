@@ -5,7 +5,7 @@ import { SubSet } from '_helpers';
 
 import { StylesProps, provideStyles } from './Typography.style';
 
-type Variant = 'h3' | 'h4' | 'h5' | 'h6' | 'body1' | 'body2' | 'subtitle1' | 'caption' | 'overline';
+type Variant = 'h3' | 'h4' | 'h5' | 'h6' | 'body1' | 'body2' | 'subtitle1' | 'subtitle2' | 'caption' | 'overline';
 
 interface IOwnProps {
   weight?: 'normal' | 'medium' | 'bold';

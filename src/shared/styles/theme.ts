@@ -84,6 +84,9 @@ export const theme: Theme = createMuiTheme({
   },
   typography: {
     fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','),
+    subtitle2: {
+      textTransform: 'uppercase',
+    },
   },
   shape: {
     borderRadius: 4,
@@ -117,11 +120,6 @@ export const theme: Theme = createMuiTheme({
         textTransform: 'initial',
         minHeight: 40,
         fontWeight: 500,
-      },
-    },
-    MuiSvgIcon: {
-      root: {
-        fontSize: 22,
       },
     },
     MuiSelect: {

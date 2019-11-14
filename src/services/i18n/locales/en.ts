@@ -41,6 +41,8 @@ export default {
     waiting: 'Waiting',
     daysAmount: '%{smart_count} day |||| %{smart_count} days',
     mainTitle: 'Akropolis Staking Portal',
+    balance: 'Balance',
+    bonded: 'Bonded',
   },
   features: {
     validators: {
@@ -62,8 +64,9 @@ export default {
       list: {
         columns: {
           name: 'Name',
+          balance: 'Balance',
           nominees: 'Nominees',
-          size: 'Size',
+          bonded: 'Bonded',
           awaitingWithdrawal: 'Awaiting unbonding',
           redeemable: 'Redeemable',
         },

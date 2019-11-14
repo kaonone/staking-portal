@@ -144,4 +144,34 @@ export class Api {
 
     return accounts$;
   }
+
+  @memoize()
+  public getTotalBalanceInfo$(): Observable<{ totalBalance: BN; totalBonded: BN }> {
+    return this.getSubstrateAccounts$().pipe(
+      switchMap(accounts =>
+        combineLatest(
+          accounts.map(account => {
+            const balanceInfo$ = this.getBalanceInfo$(account.address);
+            const stakingInfo$ = this.getStakingInfo$(account.address);
+
+            return combineLatest([balanceInfo$, stakingInfo$]).pipe(
+              map(([balanceInfo, stakingInfo]) => ({ balanceInfo, stakingInfo })),
+            );
+          }),
+        ),
+      ),
+      map(allInfos =>
+        allInfos.reduce(
+          (acc, { balanceInfo, stakingInfo }) => ({
+            totalBalance: acc.totalBalance.add(balanceInfo.availableBalance),
+            totalBonded: acc.totalBonded.add(stakingInfo.stakingLedger ? stakingInfo.stakingLedger.active : new BN(0)),
+          }),
+          {
+            totalBalance: new BN(0),
+            totalBonded: new BN(0),
+          },
+        ),
+      ),
+    );
+  }
 }

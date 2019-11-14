@@ -4,11 +4,13 @@ const styles = (_theme: Theme) => ({
   root: {},
 
   metricTitle: {
-    color: 'inherit',
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: 1.47,
   },
 
   metricValue: {
-    color: 'inherit',
+    color: '#fff',
+    lineHeight: 1.4,
   },
 });
 
