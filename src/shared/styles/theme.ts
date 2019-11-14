@@ -84,6 +84,9 @@ export const theme: Theme = createMuiTheme({
   },
   typography: {
     fontFamily: ['Roboto', 'Arial', 'sans-serif'].join(','),
+    subtitle2: {
+      textTransform: 'uppercase',
+    },
   },
   shape: {
     borderRadius: 4,

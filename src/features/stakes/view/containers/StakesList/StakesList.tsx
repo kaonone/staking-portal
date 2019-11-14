@@ -15,6 +15,7 @@ import {
   NominatorsCountCell,
   StakeSizeCell,
   RedeemableCell,
+  BalanceCell,
 } from '../../components/stakesTableCells/stakesTableCells';
 import { useStyles } from './StakesList.style';
 
@@ -58,6 +59,10 @@ function StakesList(props: IProps) {
             <Table.Column>
               <Table.Head>{t(tKeys.columns.name.getKey())}</Table.Head>
               <Table.Cell>{({ data }) => <AddressCell account={data} />}</Table.Cell>
+            </Table.Column>
+            <Table.Column>
+              <Table.Head>{t(tKeys.columns.balance.getKey())}</Table.Head>
+              <Table.Cell>{({ data }) => <BalanceCell account={data} />}</Table.Cell>
             </Table.Column>
             <Table.Column>
               <Table.Head>{t(tKeys.columns.nominees.getKey())}</Table.Head>

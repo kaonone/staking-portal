@@ -1,4 +1,11 @@
-import { Observable, from, fromEventPattern, defer, ReplaySubject, combineLatest } from 'rxjs';
+import {
+  Observable,
+  from,
+  fromEventPattern,
+  defer,
+  ReplaySubject,
+  combineLatest,
+} from 'rxjs';
 import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
 import { identity } from 'ramda';
@@ -143,5 +150,32 @@ export class Api {
       .subscribe(accounts$);
 
     return accounts$;
+  }
+
+  @memoize()
+  public getTotalBalanceInfo$(): { totalBalance: Observable<BN>; totalBonded: Observable<BN> } {
+    const allBalances: Observable<DerivedBalances[]> = this.getSubstrateAccounts$().pipe(
+      switchMap(accounts => combineLatest(accounts.map(account => this.getBalanceInfo$(account.address)))),
+    );
+
+    const totalBalance = allBalances.pipe(
+      map(balance => balance.reduce((total, currentBalance) => total.add(currentBalance.availableBalance), new BN(0))),
+    );
+
+    const allBonded: Observable<IDerivedStaking[]> = this.getSubstrateAccounts$().pipe(
+      switchMap(accounts => combineLatest(accounts.map(account => this.getStakingInfo$(account.address)))),
+    );
+
+    const totalBonded = allBonded.pipe(
+      map(bonded =>
+        bonded.reduce(
+          (total, currentBonded) =>
+            total.add((currentBonded.stakingLedger && currentBonded.stakingLedger.active) || new BN(0)),
+          new BN(0),
+        ),
+      ),
+    );
+
+    return { totalBalance, totalBonded };
   }
 }

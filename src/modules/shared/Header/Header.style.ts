@@ -1,4 +1,4 @@
-import { withStyles, Theme, WithStyles, gradients } from 'shared/styles';
+import { withStyles, Theme, WithStyles, gradients, colors } from 'shared/styles';
 
 const styles = (theme: Theme) => ({
   root: {
@@ -13,6 +13,18 @@ const styles = (theme: Theme) => ({
 
   title: {
     color: '#fff',
+  },
+
+  balanceTitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+  },
+
+  divider: {
+    backgroundColor: colors.heliotrope,
+  },
+
+  dividerItem: {
+    alignSelf: 'stretch',
   },
 });
 
