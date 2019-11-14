@@ -5,10 +5,12 @@ const styles = (_theme: Theme) => ({
 
   metricTitle: {
     color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: 1.47,
   },
 
   metricValue: {
     color: '#fff',
+    lineHeight: 1.4,
   },
 });
 

@@ -122,11 +122,6 @@ export const theme: Theme = createMuiTheme({
         fontWeight: 500,
       },
     },
-    MuiSvgIcon: {
-      root: {
-        fontSize: 22,
-      },
-    },
     MuiSelect: {
       selectMenu: {
         display: 'flex',

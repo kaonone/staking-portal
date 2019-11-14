@@ -7,7 +7,7 @@ import { useStyles } from './BalanceMetrics.style';
 
 export interface IMetric {
   title: string;
-  value: string | React.ReactNode;
+  value: React.ReactNode;
 }
 
 interface IProps {
@@ -20,22 +20,18 @@ function BalanceMetrics(props: IProps) {
 
   return (
     <Grid container spacing={2} alignItems="center">
-      {metrics.map(({ title, value }, index) =>
-        index === metrics.length - 1 ? (
-          <Grid item>
-            <Metric title={title} value={value} />
-          </Grid>
-        ) : (
-          <>
-            <Grid item>
-              <Metric title={title} value={value} />
-            </Grid>
+      {metrics.map(({ title, value }, index) => (
+        <React.Fragment key={index}>
+          {!!index && (
             <Grid item className={classes.dividerItem}>
               <Divider orientation="vertical" className={classes.divider} />
             </Grid>
-          </>
-        ),
-      )}
+          )}
+          <Grid item>
+            <Metric title={title} value={value} />
+          </Grid>
+        </React.Fragment>
+      ))}
     </Grid>
   );
 }

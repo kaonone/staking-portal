@@ -35,9 +35,13 @@ export function NominatorsCountCell({ account }: ICellProps) {
 export function BalanceCell({ account }: ICellProps) {
   const { api } = useDeps();
   const [balance, balanceMeta] = useSubscribable(() => api.getBalanceInfo$(account.address), [account]);
-  const balanceSize = balance && balance.availableBalance || new BN(0);
+  const balanceSize = (balance && balance.availableBalance) || new BN(0);
 
-  return <Loading meta={balanceMeta}><BalanceValue input={balanceSize} /></Loading>;
+  return (
+    <Loading meta={balanceMeta}>
+      <BalanceValue input={balanceSize} />
+    </Loading>
+  );
 }
 
 export function StakeSizeCell({ account }: ICellProps) {

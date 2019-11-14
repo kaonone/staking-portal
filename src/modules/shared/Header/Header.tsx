@@ -30,20 +30,24 @@ function Header(props: IProps) {
   const tKeys = tKeysAll.shared;
   const { api } = useDeps();
 
-  const [totalBalanceInfo, totalBalanceInfoMeta] = useSubscribable(() => api.getTotalBalanceInfo$(), []);
+  const [{ totalBalance, totalBonded }, totalBalanceInfoMeta] = useSubscribable(() => api.getTotalBalanceInfo$(), [], {
+    totalBalance: new BN(0),
+    totalBonded: new BN(0),
+  });
 
-  const getBalanceValueComponent = (input: BN) => <BalanceValue input={input} />;
-
-  const metrics: IMetric[] = [
-    {
-      title: t(tKeys.balance.getKey()),
-      value: getBalanceValueComponent((totalBalanceInfo && totalBalanceInfo.totalBalance) || new BN(0)),
-    },
-    {
-      title: t(tKeys.bonded.getKey()),
-      value: getBalanceValueComponent((totalBalanceInfo && totalBalanceInfo.totalBonded) || new BN(0)),
-    },
-  ];
+  const metrics: IMetric[] = React.useMemo(
+    () => [
+      {
+        title: t(tKeys.balance.getKey()),
+        value: <BalanceValue input={totalBalance} />,
+      },
+      {
+        title: t(tKeys.bonded.getKey()),
+        value: <BalanceValue input={totalBonded} />,
+      },
+    ],
+    [t, totalBalance, totalBonded],
+  );
 
   return (
     <div className={classes.root}>
