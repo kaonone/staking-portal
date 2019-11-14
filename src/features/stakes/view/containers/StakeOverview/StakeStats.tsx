@@ -23,9 +23,11 @@ function StakeStats(props: IProps) {
   const { api } = useDeps();
   const { t, tKeys: tKeysAll } = useTranslate();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stakeAddress), []);
+  const [balance, balanceMeta] = useSubscribable(() => api.getBalanceInfo$(stakeAddress), []);
 
   const tKeys = tKeysAll.features.stakes.metrics;
 
+  const availableBalance = balance ? balance.availableBalance.toString() : '0';
   const bonded = info && info.stakingLedger ? info.stakingLedger.active.toString() : '0';
   const unbonding =
     info && info.unlocking
@@ -38,6 +40,10 @@ function StakeStats(props: IProps) {
 
   const metrics = React.useMemo<IStakeMetric[]>(
     () => [
+      {
+        name: t(tKeys.balance.getKey()),
+        value: availableBalance,
+      },
       {
         name: t(tKeys.bonded.getKey()),
         value: bonded,
@@ -59,7 +65,7 @@ function StakeStats(props: IProps) {
       <Typography variant="h4" gutterBottom>
         Stake condition
       </Typography>
-      <Loading meta={infoMeta} variant="hint">
+      <Loading meta={[infoMeta, balanceMeta]} variant="hint">
         <Table data={metrics} separated>
           <Table.Column>
             <Table.Cell>{({ data }) => data.name}</Table.Cell>

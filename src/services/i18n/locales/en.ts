@@ -82,6 +82,7 @@ export default {
         notFound: 'To unbond funds, use the Withdraw button',
       },
       metrics: {
+        balance: 'Balance',
         bonded: 'Bonded',
         unbonding: 'Unbonding',
         redeemable: 'Redeemable',
