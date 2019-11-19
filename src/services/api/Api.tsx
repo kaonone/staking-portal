@@ -1,3 +1,5 @@
+import React from 'react';
+import { renderToString } from 'react-dom/server';
 import { Observable, from, fromEventPattern, defer, ReplaySubject, combineLatest } from 'rxjs';
 import { switchMap, retry, map } from 'rxjs/operators';
 import BN from 'bn.js';
@@ -6,8 +8,13 @@ import { ApiRx } from '@polkadot/api';
 import { DerivedSessionInfo, DerivedFees, DerivedBalances, DerivedRecentlyOffline } from '@polkadot/api-derive/types';
 import { web3Enable, web3AccountsSubscribe } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import Link from '@material-ui/core/Link';
 
+import { SUBSTRATE_CHROME_EXTENSION_URL, SUBSTRATE_FIREFOX_EXTENSION_URL } from 'core/constants';
+import { ITranslateKey, tKeys } from 'services/i18n';
 import { memoize, delay } from 'shared/helpers';
+import { TranslatableError } from 'shared/errors';
+
 import { callPolkaApi } from './callPolkaApi';
 import { IStakingLedger, IDerivedStaking, IChainProperties } from './callPolkaApi/types';
 import { ExtrinsicApi, ISubmittedExtrinsic, Payee } from './ExtrinsicApi';
@@ -134,9 +141,25 @@ export class Api {
                 emitter => web3AccountsSubscribe(emitter),
                 (_, signal: ReturnType<typeof web3AccountsSubscribe>) => signal.then(unsubscribe => unsubscribe()),
               )
-            : new Observable<InjectedAccountWithMeta[]>(subscriber =>
-                subscriber.error(new Error('Injected extensions not found')),
-              ),
+            : new Observable<InjectedAccountWithMeta[]>(subscriber => {
+                const error: ITranslateKey = {
+                  key: tKeys.shared.notFoundExtension.getKey(),
+                  params: {
+                    chromeLink: renderToString(
+                      <Link target="_blank" rel="noopener noreferrer" href={SUBSTRATE_CHROME_EXTENSION_URL}>
+                        Chrome
+                      </Link>,
+                    ),
+                    firefoxLink: renderToString(
+                      <Link target="_blank" rel="noopener noreferrer" href={SUBSTRATE_FIREFOX_EXTENSION_URL}>
+                        Firefox
+                      </Link>,
+                    ),
+                  },
+                };
+
+                subscriber.error(new TranslatableError(error));
+              }),
         ),
         retry(3),
       )

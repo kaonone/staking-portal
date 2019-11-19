@@ -28,6 +28,7 @@ export default {
     noConnection: 'No connection to the Polkadot Network',
     needUseExtension:
       'This browser has no connection to the Polkadot Network. Please use the Chrome/FireFox Polkadot extension.',
+    notFoundExtension: 'Injected extension not found. You need to install %{chromeLink} or %{firefoxLink} Polkadot.JS extension.',
     makeSureUseExtension: 'Please make sure you are using Polkadot extension',
     somethingWentWrong: 'Oh. Something went wrong.',
     new: 'New',

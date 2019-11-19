@@ -65,7 +65,7 @@ function Header(props: IProps) {
           </Typography>
         </Grid>
         {showMetrics && (
-          <Loading meta={totalBalanceInfoMeta} progressVariant="circle">
+          <Loading meta={totalBalanceInfoMeta} progressVariant="circle" hideError>
             <Grid item>
               <BalanceMetrics metrics={metrics} />
             </Grid>
