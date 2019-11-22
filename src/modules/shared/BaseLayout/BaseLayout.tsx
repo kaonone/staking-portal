@@ -13,6 +13,7 @@ interface IOwnProps {
   backRoutePath?: string;
   additionalHeaderContent?: React.ReactNode;
   showMetrics?: boolean;
+  showEra?: boolean;
   hidePageNavigation?: boolean;
   children: React.ReactNode;
 }
@@ -30,6 +31,7 @@ class BaseLayout extends React.PureComponent<IProps> {
       additionalHeaderContent,
       hidePageNavigation,
       showMetrics,
+      showEra,
     } = this.props;
 
     const headerProps: GetProps<typeof Header> = {
@@ -37,6 +39,7 @@ class BaseLayout extends React.PureComponent<IProps> {
       backRoutePath,
       title,
       showMetrics,
+      showEra,
       additionalContent: additionalHeaderContent,
     };
 

@@ -12,14 +12,15 @@ export interface IMetric {
 
 interface IProps {
   metrics: IMetric[];
+  className?: string;
 }
 
 function BalanceMetrics(props: IProps) {
-  const { metrics } = props;
+  const { metrics, className } = props;
   const classes = useStyles();
 
   return (
-    <Grid container spacing={2} alignItems="center">
+    <Grid container spacing={2} alignItems="center" className={className}>
       {metrics.map(({ title, value }, index) => (
         <React.Fragment key={index}>
           {!!index && (

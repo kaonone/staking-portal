@@ -44,6 +44,7 @@ export default {
     mainTitle: 'Akropolis Staking Portal',
     balance: 'Balance',
     bonded: 'Bonded',
+    era: 'Era',
   },
   features: {
     validators: {
@@ -87,6 +88,9 @@ export default {
         bonded: 'Bonded',
         unbonding: 'Unbonding',
         redeemable: 'Redeemable',
+        deposit: 'Deposit',
+        withdraw: 'Withdraw',
+        redeem: 'Redeem',
       },
     },
     manageStake: {
@@ -107,10 +111,7 @@ export default {
         submitButtonText: 'Withdraw money',
       },
       actions: {
-        withdraw: 'Withdraw',
-        deposit: 'Deposit',
         nominate: 'Nominate',
-        redeem: 'Redeem',
         editNominees: 'Edit nominees',
         stopNominating: 'Stop nominating',
       },

@@ -6,6 +6,10 @@ import { formatBalance } from '@polkadot/util';
 import { useTranslate } from 'services/i18n';
 import { Typography, Loading, Table as GenericTable, MakeTableType } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
+import { BalanceReplenishmentForm, CashWithdrawalForm, CashRedeeming } from 'features/manageStake';
+
+import { BalanceChangingButton } from '../../components/BalanceChangingButton/BalanceChangingButton';
+import { useStyles } from './StakeStats.style';
 
 const Table = GenericTable as MakeTableType<IStakeMetric>;
 
@@ -20,6 +24,7 @@ interface IStakeMetric {
 
 function StakeStats(props: IProps) {
   const { stakeAddress } = props;
+  const classes = useStyles();
   const { api } = useDeps();
   const { t, tKeys: tKeysAll } = useTranslate();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stakeAddress), []);
@@ -66,12 +71,47 @@ function StakeStats(props: IProps) {
         Stake condition
       </Typography>
       <Loading meta={[infoMeta, balanceMeta]} variant="hint">
-        <Table data={metrics} separated>
+        <Table className={classes.table} data={metrics} separated>
           <Table.Column>
             <Table.Cell>{({ data }) => data.name}</Table.Cell>
           </Table.Column>
           <Table.Column>
             <Table.Cell>{({ data }) => formatBalance(data.value)}</Table.Cell>
+          </Table.Column>
+          <Table.Column>
+            <Table.Cell className={classes.cell}>
+              {({ data }) =>
+                data.name === 'Bonded' && (
+                  <BalanceChangingButton
+                    modalContent={BalanceReplenishmentForm}
+                    address={stakeAddress}
+                    text={t(tKeys.deposit.getKey())}
+                  />
+                )
+              }
+            </Table.Cell>
+          </Table.Column>
+          <Table.Column>
+            <Table.Cell className={classes.cell}>
+              {({ data }) =>
+                data.name === 'Bonded' ? (
+                  <BalanceChangingButton
+                    modalContent={CashWithdrawalForm}
+                    address={stakeAddress}
+                    text={t(tKeys.withdraw.getKey())}
+                  />
+                ) : (
+                  data.name === 'Redeemable' && (
+                    <BalanceChangingButton
+                      modalContent={CashRedeeming}
+                      address={stakeAddress}
+                      text={t(tKeys.redeem.getKey())}
+                      disabled={!Number(redeemable)}
+                    />
+                  )
+                )
+              }
+            </Table.Cell>
           </Table.Column>
         </Table>
       </Loading>

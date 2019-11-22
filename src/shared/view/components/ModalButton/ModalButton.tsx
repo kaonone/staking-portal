@@ -8,7 +8,7 @@ interface IChildrenProps {
   closeModal(): void;
 }
 
-type ButtonProps = Pick<GetProps<typeof Button>, 'variant' | 'color'>;
+type ButtonProps = Pick<GetProps<typeof Button>, 'variant' | 'color' | 'disabled' | 'fullWidth'>;
 
 interface IProps extends ButtonProps {
   dialogMaxWidth?: DialogProps['maxWidth'];
