@@ -14,6 +14,10 @@ const styles = (theme: Theme) => ({
   title: {
     color: '#fff',
   },
+
+  metrics: {
+    marginLeft: theme.spacing(2),
+  },
 });
 
 export const provideStyles = withStyles(styles);

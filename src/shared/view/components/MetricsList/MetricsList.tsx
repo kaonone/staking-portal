@@ -1,9 +1,9 @@
 import * as React from 'react';
 
+import Metric from 'shared/view/components/Metric/Metric';
 import { Grid, Divider } from 'shared/view/elements';
-import { Metric } from 'shared/view/components';
 
-import { useStyles } from './BalanceMetrics.style';
+import { useStyles } from './MetricsList.style';
 
 export interface IMetric {
   title: string;
@@ -12,14 +12,15 @@ export interface IMetric {
 
 interface IProps {
   metrics: IMetric[];
+  className?: string;
 }
 
-function BalanceMetrics(props: IProps) {
-  const { metrics } = props;
+function MetricsList(props: IProps) {
+  const { metrics, className } = props;
   const classes = useStyles();
 
   return (
-    <Grid container spacing={2} alignItems="center">
+    <Grid container spacing={2} alignItems="center" className={className}>
       {metrics.map(({ title, value }, index) => (
         <React.Fragment key={index}>
           {!!index && (
@@ -36,4 +37,4 @@ function BalanceMetrics(props: IProps) {
   );
 }
 
-export { BalanceMetrics };
+export { MetricsList };

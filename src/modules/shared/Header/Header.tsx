@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { withRouter, RouteComponentProps, Link } from 'react-router-dom';
 import BN from 'bn.js';
+import { DerivedSessionInfo } from '@polkadot/api-derive/types';
 
-import { IMetric, BalanceMetrics } from 'shared/view/components/BalanceMetrics/BalanceMetrics';
+import { IMetric, MetricsList } from 'shared/view/components/MetricsList/MetricsList';
 import { Back } from 'shared/view/elements/Icons';
 import { Grid, IconButton, Typography, Loading } from 'shared/view/elements';
 import { withComponent, useSubscribable } from 'shared/helpers/react';
@@ -19,13 +20,14 @@ interface IOwnProps {
   backRoutePath?: string;
   title: React.ReactNode;
   additionalContent?: React.ReactNode;
-  showMetrics?: boolean;
+  showBalances?: boolean;
+  showEra?: boolean;
 }
 
 type IProps = IOwnProps & StylesProps & RouteComponentProps;
 
 function Header(props: IProps) {
-  const { classes, actions, title, backRoutePath, additionalContent, showMetrics } = props;
+  const { classes, actions, title, backRoutePath, additionalContent, showBalances, showEra } = props;
   const { t } = useTranslate();
   const tKeys = tKeysAll.shared;
   const { api } = useDeps();
@@ -35,7 +37,23 @@ function Header(props: IProps) {
     totalBonded: new BN(0),
   });
 
-  const metrics: IMetric[] = React.useMemo(
+  const [{ eraProgress, eraLength }, sessionInfoMeta] = useSubscribable<Partial<DerivedSessionInfo>>(
+    () => api.getSessionInfo$(),
+    [],
+    {},
+  );
+
+  const eraMetrics = React.useMemo(
+    () => [
+      {
+        title: t(tKeys.era.getKey()),
+        value: `${eraProgress}/${eraLength}`,
+      },
+    ],
+    [t, eraProgress, eraLength],
+  );
+
+  const balanceMetrics: IMetric[] = React.useMemo(
     () => [
       {
         title: t(tKeys.balance.getKey()),
@@ -48,6 +66,13 @@ function Header(props: IProps) {
     ],
     [t, totalBalance, totalBonded],
   );
+
+  const metrics = React.useMemo(() => [...(showBalances ? balanceMetrics : []), ...(showEra ? eraMetrics : [])], [
+    showBalances,
+    showEra,
+    balanceMetrics,
+    eraMetrics,
+  ]);
 
   return (
     <div className={classes.root}>
@@ -64,13 +89,6 @@ function Header(props: IProps) {
             {title}
           </Typography>
         </Grid>
-        {showMetrics && (
-          <Loading meta={totalBalanceInfoMeta} progressVariant="circle" hideError>
-            <Grid item>
-              <BalanceMetrics metrics={metrics} />
-            </Grid>
-          </Loading>
-        )}
         {actions &&
           !!actions.length &&
           actions.map((action, index) => (
@@ -78,6 +96,13 @@ function Header(props: IProps) {
               {action}
             </Grid>
           ))}
+        {metrics.length && (
+          <Loading meta={[totalBalanceInfoMeta, sessionInfoMeta]} progressVariant="circle" hideError>
+            <Grid item>
+              <MetricsList className={classes.metrics} metrics={metrics} />
+            </Grid>
+          </Loading>
+        )}
         {!!additionalContent && (
           <Grid item xs={12}>
             {additionalContent}

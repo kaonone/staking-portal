@@ -6,6 +6,10 @@ import { formatBalance } from '@polkadot/util';
 import { useTranslate } from 'services/i18n';
 import { Typography, Loading, Table as GenericTable, MakeTableType } from 'shared/view/elements';
 import { useSubscribable } from 'shared/helpers/react';
+import { BalanceReplenishmentForm, CashWithdrawalForm, CashRedeeming } from 'features/manageStake';
+
+import { BalanceChangingButton } from '../../components/BalanceChangingButton/BalanceChangingButton';
+import { useStyles } from './StakeStats.style';
 
 const Table = GenericTable as MakeTableType<IStakeMetric>;
 
@@ -13,13 +17,22 @@ interface IProps {
   stakeAddress: string;
 }
 
+enum MetricType {
+  Balance = 'Balance',
+  Bonded = 'Bonded',
+  Unbonding = 'Unbonding',
+  Redeemable = 'Redeemable',
+}
+
 interface IStakeMetric {
   name: string;
   value: string;
+  type: MetricType;
 }
 
 function StakeStats(props: IProps) {
   const { stakeAddress } = props;
+  const classes = useStyles();
   const { api } = useDeps();
   const { t, tKeys: tKeysAll } = useTranslate();
   const [info, infoMeta] = useSubscribable(() => api.getStakingInfo$(stakeAddress), []);
@@ -43,18 +56,22 @@ function StakeStats(props: IProps) {
       {
         name: t(tKeys.balance.getKey()),
         value: availableBalance,
+        type: MetricType.Balance,
       },
       {
         name: t(tKeys.bonded.getKey()),
         value: bonded,
+        type: MetricType.Bonded,
       },
       {
         name: t(tKeys.unbonding.getKey()),
         value: unbonding,
+        type: MetricType.Unbonding,
       },
       {
         name: t(tKeys.redeemable.getKey()),
         value: redeemable,
+        type: MetricType.Redeemable,
       },
     ],
     [bonded, unbonding, redeemable],
@@ -66,12 +83,47 @@ function StakeStats(props: IProps) {
         Stake condition
       </Typography>
       <Loading meta={[infoMeta, balanceMeta]} variant="hint">
-        <Table data={metrics} separated>
+        <Table className={classes.table} data={metrics} separated>
           <Table.Column>
             <Table.Cell>{({ data }) => data.name}</Table.Cell>
           </Table.Column>
           <Table.Column>
             <Table.Cell>{({ data }) => formatBalance(data.value)}</Table.Cell>
+          </Table.Column>
+          <Table.Column>
+            <Table.Cell className={classes.cell}>
+              {({ data }) =>
+                data.type === MetricType.Bonded && (
+                  <BalanceChangingButton
+                    ModalContent={BalanceReplenishmentForm}
+                    address={stakeAddress}
+                    text={t(tKeys.deposit.getKey())}
+                  />
+                )
+              }
+            </Table.Cell>
+          </Table.Column>
+          <Table.Column>
+            <Table.Cell className={classes.cell}>
+              {({ data }) =>
+                data.type === MetricType.Bonded ? (
+                  <BalanceChangingButton
+                    ModalContent={CashWithdrawalForm}
+                    address={stakeAddress}
+                    text={t(tKeys.withdraw.getKey())}
+                  />
+                ) : (
+                  data.type === MetricType.Redeemable && (
+                    <BalanceChangingButton
+                      ModalContent={CashRedeeming}
+                      address={stakeAddress}
+                      text={t(tKeys.redeem.getKey())}
+                      disabled={!Number(redeemable)}
+                    />
+                  )
+                )
+              }
+            </Table.Cell>
           </Table.Column>
         </Table>
       </Loading>

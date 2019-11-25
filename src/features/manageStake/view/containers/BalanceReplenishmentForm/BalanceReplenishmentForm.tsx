@@ -29,7 +29,9 @@ function BalanceReplenishmentForm(props: IProps) {
   const minBalanceAfterBonding =
     (fee && max(fee.transactionBaseFee, fee.transactionByteFee).mul(new BN(1000))) || new BN(0);
 
-  const availableAmount = (balance && balance.availableBalance.sub(minBalanceAfterBonding)) || new BN(0);
+  const availableAmount =
+    (balance && balance.availableBalance.gt(new BN(1000)) && balance.availableBalance.sub(minBalanceAfterBonding)) ||
+    new BN(0);
 
   const onSubmit = React.useCallback(
     async (values: IFormData) => {

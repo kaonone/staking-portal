@@ -57,7 +57,7 @@ function Table<T>(props: ITableProps<T>) {
           <tr>
             {columns.map(({ headProps }, index) =>
               headProps ? (
-                <td key={index} align={headProps.align}>
+                <td key={index} align={headProps.align} className={headProps.className}>
                   {headProps.children}
                 </td>
               ) : (
@@ -72,7 +72,7 @@ function Table<T>(props: ITableProps<T>) {
           <tr key={index} className={cn(props.className, { [classes.clickable]: !!props.onClick })}>
             {columns.map(({ cellProps }, cellIndex) =>
               cellProps ? (
-                <td key={cellIndex} align={cellProps.align}>
+                <td key={cellIndex} align={cellProps.align} className={cellProps.className}>
                   {cellProps.children({ index, data: dataRow })}
                 </td>
               ) : (

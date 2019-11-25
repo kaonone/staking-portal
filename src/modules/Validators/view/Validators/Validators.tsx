@@ -8,7 +8,7 @@ import { useTranslate } from 'services/i18n';
 function Validators(_props: RouteComponentProps<any>) {
   const { t, tKeys } = useTranslate();
   return (
-    <BaseLayout title={t(tKeys.shared.mainTitle.getKey())} showMetrics>
+    <BaseLayout title={t(tKeys.shared.mainTitle.getKey())} showBalances showEra>
       <ValidatorsList />
     </BaseLayout>
   );

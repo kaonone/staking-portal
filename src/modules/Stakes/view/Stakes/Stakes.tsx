@@ -12,7 +12,7 @@ function Stakes(_props: RouteComponentProps<any>) {
   const makeLinkToStake = React.useCallback((address) => routes.stake.address.getRedirectPath({ address }), []);
 
   return (
-    <BaseLayout title={t(tKeys.shared.mainTitle.getKey())} showMetrics>
+    <BaseLayout title={t(tKeys.shared.mainTitle.getKey())} showBalances showEra>
       <StakesList makeLinkToStake={makeLinkToStake} />
     </BaseLayout>
   );
