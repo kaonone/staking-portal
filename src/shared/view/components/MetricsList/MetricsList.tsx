@@ -1,9 +1,9 @@
 import * as React from 'react';
 
+import Metric from 'shared/view/components/Metric/Metric';
 import { Grid, Divider } from 'shared/view/elements';
-import { Metric } from 'shared/view/components';
 
-import { useStyles } from './BalanceMetrics.style';
+import { useStyles } from './MetricsList.style';
 
 export interface IMetric {
   title: string;
@@ -15,7 +15,7 @@ interface IProps {
   className?: string;
 }
 
-function BalanceMetrics(props: IProps) {
+function MetricsList(props: IProps) {
   const { metrics, className } = props;
   const classes = useStyles();
 
@@ -37,4 +37,4 @@ function BalanceMetrics(props: IProps) {
   );
 }
 
-export { BalanceMetrics };
+export { MetricsList };

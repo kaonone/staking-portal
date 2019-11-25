@@ -3,7 +3,7 @@ import { withRouter, RouteComponentProps, Link } from 'react-router-dom';
 import BN from 'bn.js';
 import { DerivedSessionInfo } from '@polkadot/api-derive/types';
 
-import { IMetric, BalanceMetrics } from 'shared/view/components/BalanceMetrics/BalanceMetrics';
+import { IMetric, MetricsList } from 'shared/view/components/MetricsList/MetricsList';
 import { Back } from 'shared/view/elements/Icons';
 import { Grid, IconButton, Typography, Loading } from 'shared/view/elements';
 import { withComponent, useSubscribable } from 'shared/helpers/react';
@@ -20,14 +20,14 @@ interface IOwnProps {
   backRoutePath?: string;
   title: React.ReactNode;
   additionalContent?: React.ReactNode;
-  showMetrics?: boolean;
+  showBalances?: boolean;
   showEra?: boolean;
 }
 
 type IProps = IOwnProps & StylesProps & RouteComponentProps;
 
 function Header(props: IProps) {
-  const { classes, actions, title, backRoutePath, additionalContent, showMetrics, showEra } = props;
+  const { classes, actions, title, backRoutePath, additionalContent, showBalances, showEra } = props;
   const { t } = useTranslate();
   const tKeys = tKeysAll.shared;
   const { api } = useDeps();
@@ -53,7 +53,7 @@ function Header(props: IProps) {
     [eraProgress, eraLength],
   );
 
-  const metrics: IMetric[] = React.useMemo(
+  const balanceMetrics: IMetric[] = React.useMemo(
     () => [
       {
         title: t(tKeys.balance.getKey()),
@@ -63,10 +63,16 @@ function Header(props: IProps) {
         title: t(tKeys.bonded.getKey()),
         value: <BalanceValue input={totalBonded} />,
       },
-      ...eraMetrics,
     ],
-    [t, totalBalance, totalBonded, eraProgress, eraLength],
+    [t, totalBalance, totalBonded],
   );
+
+  const metrics = React.useMemo(() => [...(showBalances ? balanceMetrics : []), ...(showEra ? eraMetrics : [])], [
+    eraProgress,
+    eraLength,
+    totalBalance,
+    totalBonded,
+  ]);
 
   return (
     <div className={classes.root}>
@@ -90,10 +96,10 @@ function Header(props: IProps) {
               {action}
             </Grid>
           ))}
-        {(showMetrics || showEra) && (
+        {metrics.length && (
           <Loading meta={[totalBalanceInfoMeta, sessionInfoMeta]} progressVariant="circle" hideError>
             <Grid item>
-              <BalanceMetrics className={classes.metrics} metrics={showMetrics ? metrics : eraMetrics} />
+              <MetricsList className={classes.metrics} metrics={metrics} />
             </Grid>
           </Loading>
         )}

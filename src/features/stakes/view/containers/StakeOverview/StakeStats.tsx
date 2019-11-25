@@ -17,9 +17,17 @@ interface IProps {
   stakeAddress: string;
 }
 
+enum MetricType {
+  Balance = 'Balance',
+  Bonded = 'Bonded',
+  Unbonding = 'Unbonding',
+  Redeemable = 'Redeemable',
+}
+
 interface IStakeMetric {
   name: string;
   value: string;
+  type: MetricType;
 }
 
 function StakeStats(props: IProps) {
@@ -48,18 +56,22 @@ function StakeStats(props: IProps) {
       {
         name: t(tKeys.balance.getKey()),
         value: availableBalance,
+        type: MetricType.Balance,
       },
       {
         name: t(tKeys.bonded.getKey()),
         value: bonded,
+        type: MetricType.Bonded,
       },
       {
         name: t(tKeys.unbonding.getKey()),
         value: unbonding,
+        type: MetricType.Unbonding,
       },
       {
         name: t(tKeys.redeemable.getKey()),
         value: redeemable,
+        type: MetricType.Redeemable,
       },
     ],
     [bonded, unbonding, redeemable],
@@ -81,7 +93,7 @@ function StakeStats(props: IProps) {
           <Table.Column>
             <Table.Cell className={classes.cell}>
               {({ data }) =>
-                data.name === 'Bonded' && (
+                data.type === MetricType.Bonded && (
                   <BalanceChangingButton
                     ModalContent={BalanceReplenishmentForm}
                     address={stakeAddress}
@@ -94,14 +106,14 @@ function StakeStats(props: IProps) {
           <Table.Column>
             <Table.Cell className={classes.cell}>
               {({ data }) =>
-                data.name === 'Bonded' ? (
+                data.type === MetricType.Bonded ? (
                   <BalanceChangingButton
                     ModalContent={CashWithdrawalForm}
                     address={stakeAddress}
                     text={t(tKeys.withdraw.getKey())}
                   />
                 ) : (
-                  data.name === 'Redeemable' && (
+                  data.type === MetricType.Redeemable && (
                     <BalanceChangingButton
                       ModalContent={CashRedeeming}
                       address={stakeAddress}
