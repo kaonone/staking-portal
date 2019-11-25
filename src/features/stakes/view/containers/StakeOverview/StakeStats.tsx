@@ -83,7 +83,7 @@ function StakeStats(props: IProps) {
               {({ data }) =>
                 data.name === 'Bonded' && (
                   <BalanceChangingButton
-                    modalContent={BalanceReplenishmentForm}
+                    ModalContent={BalanceReplenishmentForm}
                     address={stakeAddress}
                     text={t(tKeys.deposit.getKey())}
                   />
@@ -96,14 +96,14 @@ function StakeStats(props: IProps) {
               {({ data }) =>
                 data.name === 'Bonded' ? (
                   <BalanceChangingButton
-                    modalContent={CashWithdrawalForm}
+                    ModalContent={CashWithdrawalForm}
                     address={stakeAddress}
                     text={t(tKeys.withdraw.getKey())}
                   />
                 ) : (
                   data.name === 'Redeemable' && (
                     <BalanceChangingButton
-                      modalContent={CashRedeeming}
+                      ModalContent={CashRedeeming}
                       address={stakeAddress}
                       text={t(tKeys.redeem.getKey())}
                       disabled={!Number(redeemable)}

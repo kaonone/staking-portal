@@ -13,7 +13,7 @@ type ButtonProps = Pick<GetProps<typeof Button>, 'variant' | 'color' | 'disabled
 interface IProps extends ButtonProps {
   dialogMaxWidth?: DialogProps['maxWidth'];
   content: React.ReactNode;
-  children: React.ReactNode | ((props: IChildrenProps) => React.ReactNode);
+  children: (props: IChildrenProps) => React.ReactNode;
 }
 
 function ModalButton(props: IProps) {
