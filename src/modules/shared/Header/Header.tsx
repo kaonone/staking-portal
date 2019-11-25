@@ -37,10 +37,10 @@ function Header(props: IProps) {
     totalBonded: new BN(0),
   });
 
-  const [{ eraProgress, eraLength }, sessionInfoMeta] = useSubscribable(
+  const [{ eraProgress, eraLength }, sessionInfoMeta] = useSubscribable<Partial<DerivedSessionInfo>>(
     () => api.getSessionInfo$(),
     [],
-    {} as DerivedSessionInfo,
+    {},
   );
 
   const eraMetrics = React.useMemo(
@@ -50,7 +50,7 @@ function Header(props: IProps) {
         value: `${eraProgress}/${eraLength}`,
       },
     ],
-    [eraProgress, eraLength],
+    [t, eraProgress, eraLength],
   );
 
   const balanceMetrics: IMetric[] = React.useMemo(
@@ -68,10 +68,10 @@ function Header(props: IProps) {
   );
 
   const metrics = React.useMemo(() => [...(showBalances ? balanceMetrics : []), ...(showEra ? eraMetrics : [])], [
-    eraProgress,
-    eraLength,
-    totalBalance,
-    totalBonded,
+    showBalances,
+    showEra,
+    balanceMetrics,
+    eraMetrics,
   ]);
 
   return (
