@@ -260,7 +260,7 @@
     "material-ui-pickers": "^2.2.4",
     "moment": "^2.18.1",
     "node-polyglot": "^2.3.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "normalize.css": "^8.0.0",
     "notistack": "^0.9.5",
     "path-to-regexp": "^3.0.0",
